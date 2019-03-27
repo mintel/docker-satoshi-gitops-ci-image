@@ -30,7 +30,7 @@ ENV KUSTOMIZE_VERSION=2.0.3 \
     VAULT_VERSION=1.0.3 \
     VAULT_SHA256=f52abcfbcb74f590a2229364afee11271ce597add3eeceefc1dc174590e2dff8 \
     KIND_VERSION=0.2.0 \
-    MINIKUBE_SHA256=0ed25a717de8a089eae5e0ebb4779400b2ef2f20ffe428f3b05f425c7beaf092
+    KIND_SHA256=0ed25a717de8a089eae5e0ebb4779400b2ef2f20ffe428f3b05f425c7beaf092
 
 WORKDIR /usr/local/bin
 
@@ -44,10 +44,10 @@ RUN set -xe \
     && chmod +x /usr/local/bin/kubectl \
     && echo "$KUBECTL_SHA256  kubectl" | sha256sum -c
 
-RUN set -e \
-    && wget -q -O /usr/local/bin/minikube https://github.com/kubernetes/minikube/releases/download/v${MINIKUBE_VERSION}/minikube-linux-amd64 \
-    && chmod +x /usr/local/bin/minikube \
-    && echo "$MINIKUBE_SHA256  minikube" | sha256sum -c
+#RUN set -e \
+#    && wget -q -O /usr/local/bin/minikube https://github.com/kubernetes/minikube/releases/download/v${MINIKUBE_VERSION}/minikube-linux-amd64 \
+#    && chmod +x /usr/local/bin/minikube \
+#    && echo "$MINIKUBE_SHA256  minikube" | sha256sum -c
 
 RUN set -e \
     && wget -q -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64 \
