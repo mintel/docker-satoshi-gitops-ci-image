@@ -12,7 +12,7 @@ RUN apt-get -y update && \
       gnupg2 \
       jq \
       openssh-client \
-      python-pkg-resources \
+      python3-pkg-resources \
       software-properties-common \
       wget \
       yamllint && \
