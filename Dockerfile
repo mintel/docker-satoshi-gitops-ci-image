@@ -11,6 +11,7 @@ RUN apt-get -y update && \
       git \
       gnupg2 \
       jq \
+      make \
       openssh-client \
       python3-pkg-resources \
       software-properties-common \
