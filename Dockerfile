@@ -72,7 +72,7 @@ RUN set -e \
     && echo "$KIND_SHA256  kind" | sha256sum -c
 
 USER 0
-ADD resources/* /
+COPY resources/ /
 
 RUN useradd -ms /bin/bash mintel
 USER mintel

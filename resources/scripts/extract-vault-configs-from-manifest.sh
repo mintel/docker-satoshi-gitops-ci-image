@@ -4,6 +4,7 @@
 POLICIES_DIR=$1
 CONFS_DIR=/tmp/manifests
 
+mkdir -p $CONFS_DIR
 # Count number of Docs in the file
 for file in `ls -1 $POLICIES_DIR/*.yaml`
 do
