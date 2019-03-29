@@ -6,6 +6,7 @@ LABEL maintainer "fciocchetti@mintel.com"
 RUN apt-get -y update && \
     apt-get -y install \
       apt-transport-https \
+      bash \
       ca-certificates \
       curl \
       git \
@@ -23,7 +24,9 @@ RUN apt-get -y update && \
     apt-get install docker-ce-cli && \
     apt-get -y autoremove && apt-get -y clean
 
-ENV KUSTOMIZE_VERSION=2.0.3 \
+ENV YAML2JSON_VERSION=1.3 \
+    YAML2JSON_SHA256=e792647dd757c974351ea4ad35030852af97ef9bbbfb9594f0c94317e6738e55 \
+    KUSTOMIZE_VERSION=2.0.3 \
     KUSTOMIZE_SHA256=a04d79a013827c9ebb0abfe9d41cbcedf507a0310386c8d9a7efec7a36f9d7a3 \
     MINIKUBE_VERSION=0.35.0 \
     MINIKUBE_SHA256=e161995604c42c37a797fd11fac5d545f8b75f0796afc3b10679253bf229ff3d \
@@ -35,6 +38,11 @@ ENV KUSTOMIZE_VERSION=2.0.3 \
     KIND_SHA256=0ed25a717de8a089eae5e0ebb4779400b2ef2f20ffe428f3b05f425c7beaf092
 
 WORKDIR /usr/local/bin
+
+RUN set -e \
+    && wget -q -O /usr/local/bin/yaml2json https://github.com/bronze1man/yaml2json/releases/download/v${YAML2JSON_VERSION}/yaml2json_linux_amd64 \
+    && chmod +x /usr/local/bin/yaml2json \
+    && echo "$YAML2JSON_SHA256  yaml2json" | sha256sum -c
 
 RUN set -e \
     && wget -q -O /usr/local/bin/kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64 \
