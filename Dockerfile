@@ -26,6 +26,8 @@ RUN apt-get -y update && \
 
 ENV YAML2JSON_VERSION=1.3 \
     YAML2JSON_SHA256=e792647dd757c974351ea4ad35030852af97ef9bbbfb9594f0c94317e6738e55 \
+    YQ_VERSION=2.3.0 \
+    YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
     KUSTOMIZE_VERSION=2.0.3 \
     KUSTOMIZE_SHA256=a04d79a013827c9ebb0abfe9d41cbcedf507a0310386c8d9a7efec7a36f9d7a3 \
     MINIKUBE_VERSION=0.35.0 \
@@ -43,6 +45,11 @@ RUN set -e \
     && wget -q -O /usr/local/bin/yaml2json https://github.com/bronze1man/yaml2json/releases/download/v${YAML2JSON_VERSION}/yaml2json_linux_amd64 \
     && chmod +x /usr/local/bin/yaml2json \
     && echo "$YAML2JSON_SHA256  yaml2json" | sha256sum -c
+
+RUN set -e \
+    && wget -q -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 \
+    && chmod +x /usr/local/bin/yq \
+    && echo "$YQ_SHA256  yq" | sha256sum -c
 
 RUN set -e \
     && wget -q -O /usr/local/bin/kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64 \
