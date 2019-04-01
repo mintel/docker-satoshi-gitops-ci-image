@@ -16,7 +16,7 @@ do
   do
     kind=$(yq read -d $DOC $file kind)
 
-    skip_ci=$(yq read -d $DOC $file 'metadata.annotations."mintel.com/skip-ci"')
+    skip_ci=$(yq read -d $DOC $file 'metadata.annotations."mintel.com/skip-local-ci"')
 
 
     name=$(yq read -d $DOC $file metadata.name)
