@@ -25,9 +25,9 @@ do
 
     file_name="${namespace}_${name}.yaml"
 
-    [[ $kind == "SealedSecret" ]] && echo "EXCLUDING: $namespace-$name - SealedSecret" continue
-    [[ $skip_ci == "true" ]] && echo "EXLCUDING: $namespace-$name - skip-ci annotation" continue
-    [[ $data == "null" ]] && echo "EXLCUDING: $namespace-$name - not a vault-config.yml key" continue
+    [[ $kind == "SealedSecret" ]] && echo "EXCLUDING: $namespace-$name - SealedSecret" && continue
+    [[ $skip_ci == "true" ]] && echo "EXLCUDING: $namespace-$name - skip-ci annotation" && continue
+    [[ $data == "null" ]] && echo "EXLCUDING: $namespace-$name - not a vault-config.yml key" && continue
 
     if [[ $kind == "ConfigMap" ]]; then
       yq read -d $DOC $file 'data."vault-config.yml"' > ${CONFS_DIR}/${file_name}
