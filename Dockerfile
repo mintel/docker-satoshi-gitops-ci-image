@@ -71,6 +71,8 @@ RUN set -e \
     && chmod +x /usr/local/bin/kind \
     && echo "$KIND_SHA256  kind" | sha256sum -c
 
+COPY --from=mintel/k8s-yaml-splitter /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
+
 USER 0
 COPY resources/ /
 
