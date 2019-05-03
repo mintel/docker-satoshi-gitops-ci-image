@@ -37,6 +37,8 @@ EOF
  		sed -i -e "s/localhost/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
 	fi
     
+	docker ps -a 
+	cat /etc/hosts
 	kubectl cluster-info
 
 	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
