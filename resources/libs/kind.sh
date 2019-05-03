@@ -26,8 +26,8 @@ EOF
 	fi
   
 	cat >> /tmp/kind-config.yaml <<EOF
-  networking:
-    apiServerAddress: 0.0.0.0
+networking:
+  apiServerAddress: 0.0.0.0
 EOF
 
 	kind create cluster --config /tmp/kind-config.yaml
@@ -37,8 +37,6 @@ EOF
  		sed -i -e "s/localhost/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
 	fi
     
-	docker ps -a 
-	cat /etc/hosts
 	kubectl cluster-info
 
 	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
