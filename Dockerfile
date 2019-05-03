@@ -231,7 +231,7 @@ RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
 
 ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \
-    KIND_NODES=0
+    KIND_NODES=1
 
 # Don't use a real entrypoint 
 ENTRYPOINT ["/usr/bin/env"]
