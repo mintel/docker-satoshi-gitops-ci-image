@@ -3,9 +3,11 @@
 K8S_VERSION="${K8S_VERSION:-v1.13.4}"
 K8S_WORKERS="${KIND_NODES:-1}"
 KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
+DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
 
 function start_kind() {
+ 	env
 
 	cat > /tmp/config.yaml <<EOF
 kind: Cluster
