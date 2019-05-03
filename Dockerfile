@@ -3,7 +3,8 @@ FROM debian:9-slim
 LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8  
 
 RUN apt-get -y update && \
     apt-get -y install \
@@ -228,9 +229,9 @@ ct = "/usr/local/bin/terraform-provider-ct"\n \
 # Extend PATH for mintel user
 RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
 
-
-ENV DOCKER_HOST_ALIAS=docker \
-    KIND_NODES=0
+ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    DOCKER_HOST_ALIAS=docker \
+    KIND_NODES=1
 
 # Don't use a real entrypoint 
 ENTRYPOINT ["/usr/bin/env"]
