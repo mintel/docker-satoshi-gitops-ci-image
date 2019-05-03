@@ -7,7 +7,7 @@ DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
 
 function start_kind() {
-	cat > /tmp/config.yaml <<EOF
+	cat > /tmp/kind-config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.sigs.k8s.io/v1alpha3
 nodes:
@@ -15,6 +15,7 @@ nodes:
   image: kindest/node:${K8S_VERSION}
 EOF
 
+	if [[ $K8S_WORKERS -gt 0 ]]; then
 	for i in $(seq 1 "${K8S_WORKERS}");
 	do
 		cat >> /tmp/kind-config.yaml <<EOF
@@ -22,13 +23,14 @@ EOF
   image: kindest/node:${K8S_VERSION}
 EOF
 	done
+	fi
   
 	cat >> /tmp/kind-config.yaml <<EOF
   networking:
     apiServerAddress: 0.0.0.0
 EOF
 
-	kind create cluster --config /tmp/config.yaml
+	kind create cluster --config /tmp/kind-config.yaml
 
 	export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 	if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then	
