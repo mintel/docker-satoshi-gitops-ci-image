@@ -7,8 +7,6 @@ DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
 
 function start_kind() {
- 	env
-
 	cat > /tmp/config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.sigs.k8s.io/v1alpha3
@@ -25,7 +23,7 @@ EOF
 EOF
 	done
   
-		cat >> /tmp/kind-config.yaml <<EOF
+	cat >> /tmp/kind-config.yaml <<EOF
   networking:
     apiServerAddress: 0.0.0.0
 EOF
