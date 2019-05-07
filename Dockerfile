@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get -y update && \
     apt-get -y install locales && \
     echo "LC_ALL=$LC_ALL" >> /etc/environment && \
-    echo "LANG=$LANG" > /etc/local.conf && \
+    echo "LANG=$LANG" > /etc/locale.conf && \
     echo -n "$LC_ALL" > /etc/locale.gen && \
     locale-gen "en_US.UTF-8" && \
     apt-get -y install \
