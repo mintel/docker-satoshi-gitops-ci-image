@@ -4,16 +4,27 @@ LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    LANG="en_US.UTF-8" \
-    LANGUAGE="en_US.UTF-8" \
-    LC_ALL="en_US.UTF-8"
+    LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    LC_TYPE=C.UTF-8
+
+# Clean docs
+RUN echo "path-exclude /usr/share/doc/*" > /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-include /usr/share/doc/*/copyright" >> /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-exclude /usr/share/man/*" >> /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-exclude /usr/share/groff/*" >> /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-exclude /usr/share/info/*" >> /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-exclude /usr/share/lintian/*" >> /etc/dpkg/dpkg.cfg.d/01_nodoc && \
+    echo "path-exclude /usr/share/linda/*" >> /etc/dpkg/dpkg.cfg.d/01_nodoc  && \
+    find /usr/share/doc -depth -type f ! -name copyright|xargs rm || true && \
+    find /usr/share/doc -empty|xargs rmdir || true && \
+    rm -rf /usr/share/man/* /usr/share/groff/* /usr/share/info/* && \
+    rm -rf /usr/share/lintian/* /usr/share/linda/* /var/cache/man/*
 
 RUN apt-get -y update && \
     apt-get -y install locales && \
-    echo "LC_ALL=$LC_ALL" >> /etc/environment && \
-    echo "LANG=$LANG" > /etc/local.conf && \
-    echo -n "$LC_ALL" > /etc/locale.gen && \
-    locale-gen "en_US.UTF-8" && \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
     apt-get -y install \
       apt-transport-https \
       bash \
@@ -239,7 +250,11 @@ RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
 
 ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \
-    KIND_NODES=1
+    KIND_NODES=1 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LC_TYPE=en_US.UTF-8
 
 # Don't use a real entrypoint 
 ENTRYPOINT ["/usr/bin/env"]
