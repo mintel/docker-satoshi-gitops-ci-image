@@ -5,8 +5,8 @@ LABEL maintainer "fciocchetti@mintel.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
-		LANGUAGE=en_US.UTF-8 \
-		LC_ALL=en_US.UTF-8
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 RUN apt-get -y update && \
     apt-get -y install \
