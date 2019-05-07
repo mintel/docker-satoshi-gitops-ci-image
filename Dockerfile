@@ -22,6 +22,13 @@ RUN echo "path-exclude /usr/share/doc/*" > /etc/dpkg/dpkg.cfg.d/01_nodoc && \
     rm -rf /usr/share/man/* /usr/share/groff/* /usr/share/info/* && \
     rm -rf /usr/share/lintian/* /usr/share/linda/* /var/cache/man/*
 
+WORKDIR /tmp
+
+ENV GITCRYPT_VERSION=0.6.0 \
+    GITCRYPT_SHA256=777c0c7aadbbc758b69aff1339ca61697011ef7b92f1d1ee9518a8ee7702bb78 \
+    JSONNET_VERSION=0.12.1 \
+    JSONNET_SHA256=257c6de988f746cc90486d9d0fbd49826832b7a2f0dbdb60a515cc8a2596c950
+
 RUN apt-get -y update && \
     apt-get -y install locales && \
     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
@@ -54,7 +61,17 @@ RUN apt-get -y update && \
     echo "deb https://packages.cloud.google.com/apt cloud-sdk-stretch -c -s) main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
     apt-get -y update && \
     apt-get -y install docker-ce-cli google-cloud-sdk && \
-    apt-get -y purge aptitude && \
+    curl -L https://github.com/google/jsonnet/archive/v${JSONNET_VERSION}.tar.gz -o /tmp/jsonnet.tar.gz && \
+    echo "$JSONNET_SHA256  jsonnet.tar.gz" | sha256sum -c && \
+    tar zxvf /tmp/jsonnet.tar.gz  -C /tmp && \
+    cd /tmp/jsonnet-$JSONNET_VERSION && make && mv jsonnet /usr/local/bin && chmod a+x /usr/local/bin/jsonnet && cd - && \
+    rm -rf /tmp/jsonnet.tar.gz /tmp/jsonnet-$JSONNET_VERSION && \
+    curl -L https://github.com/AGWA/git-crypt/archive/$GITCRYPT_VERSION.tar.gz -o /tmp/git-crypt.tar.gz && \
+    echo "$GITCRYPT_SHA256  git-crypt.tar.gz" | sha256sum -c && \
+    tar zxvf /tmp/git-crypt.tar.gz  -C /tmp && \
+    cd /tmp/git-crypt-$GITCRYPT_VERSION && make && make install PREFIX=/usr/local && cd - && \
+    rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION && \
+    apt-get -y purge aptitude g++ libssl-dev gcc libc-dev && \
     apt-get -y autoremove && apt-get -y clean
 
 
@@ -76,14 +93,10 @@ ENV YAML2JSON_VERSION=1.3 \
     TERRAFORM_SHA256=94504f4a67bad612b5c8e3a4b7ce6ca2772b3c1559630dfd71e9c519e3d6149c \
     TERRAGRUNT_VERSION=0.18.4 \
     TERRAGRUNT_SHA256=4c6214733eab284725dbbcd7eee17ef072501b817b42178b58310e2a2ed67dc0 \
-    GITCRYPT_VERSION=0.6.0 \
-    GITCRYPT_SHA256=777c0c7aadbbc758b69aff1339ca61697011ef7b92f1d1ee9518a8ee7702bb78 \
     TERRAFORM_CT_PROVIDER_VERSION=0.3.0 \
     TERRAFORM_CT_PROVIDER_SHA256=3d023545e08a90f792714998866ae8f8bab60bfbd583932c1c978133886d344c \
     KUBECFG_VERSION=0.11.0 \
     KUBECFG_SHA256=08a74ff85a8544e99cc6aa08c1e7e80e4c3d08ba6ce0730ccbf41d3a514ecb86 \
-    JSONNET_VERSION=0.12.1 \
-    JSONNET_SHA256=257c6de988f746cc90486d9d0fbd49826832b7a2f0dbdb60a515cc8a2596c950 \
     JQ_VERSION=1.5 \
     JQ_SHA256=c6b3a7d7d3e7b70c6f51b706a3b90bd01833846c54d32ca32f0027f00226ff6d \
     BASH_UNIT_VERSION=1.6.1 \
@@ -93,135 +106,91 @@ ENV YAML2JSON_VERSION=1.3 \
     KUBESEAL_VERSION=0.5.1 \
     KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9
 
-WORKDIR /tmp
 
 #yaml2json
 RUN set -e \
     && wget -q -O /usr/local/bin/yaml2json https://github.com/bronze1man/yaml2json/releases/download/v${YAML2JSON_VERSION}/yaml2json_linux_amd64 \
     && chmod +x /usr/local/bin/yaml2json \
     && cd /usr/local/bin \
-    && echo "$YAML2JSON_SHA256  yaml2json" | sha256sum -c
-
+    && echo "$YAML2JSON_SHA256  yaml2json" | sha256sum -c \
 #yq
-RUN set -e \
     && wget -q -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 \
     && chmod +x /usr/local/bin/yq \
     && cd /usr/local/bin \
-    && echo "$YQ_SHA256  yq" | sha256sum -c
-
+    && echo "$YQ_SHA256  yq" | sha256sum -c \
 # kustomize
-RUN set -e \
     && wget -q -O /usr/local/bin/kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64 \
     && chmod +x /usr/local/bin/kustomize \
     && cd /usr/local/bin \
-    && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c
-
+    && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
 # minikube
-RUN set -e \
     && wget -q -O /usr/local/bin/minikube https://github.com/kubernetes/minikube/releases/download/v${MINIKUBE_VERSION}/minikube-linux-amd64 \
     && chmod +x /usr/local/bin/minikube \
     && cd /usr/local/bin \
-    && echo "$MINIKUBE_SHA256  minikube" | sha256sum -c
-
+    && echo "$MINIKUBE_SHA256  minikube" | sha256sum -c \
 # kubectl
-RUN set -e \
     && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && cd /usr/local/bin \
-    && echo "$KUBECTL_SHA256  kubectl" | sha256sum -c
-
+    && echo "$KUBECTL_SHA256  kubectl" | sha256sum -c \
+    && cd /tmp \
 # vault
-RUN set -e \
     && wget -q -O /tmp/vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
     && echo "$VAULT_SHA256  vault.zip" | sha256sum -c \
     && unzip vault.zip -d /usr/local/bin \
     && chmod +x /usr/local/bin/vault \
-    && rm -f vault.zip
-
-# jsonnet
-RUN set -e \
-    && curl -L https://github.com/google/jsonnet/archive/v${JSONNET_VERSION}.tar.gz -o /tmp/jsonnet.tar.gz \
-    && echo "$JSONNET_SHA256  jsonnet.tar.gz" | sha256sum -c \
-    && tar zxvf /tmp/jsonnet.tar.gz  -C /tmp \
-    && cd /tmp/jsonnet-$JSONNET_VERSION && make && mv jsonnet /usr/local/bin && chmod a+x /usr/local/bin/jsonnet \
-    && rm -rf /tmp/jsonnet.tar.gz /tmp/jsonnet-$JSONNET_VERSION
-
+    && rm -f vault.zip \
 # terraform
-RUN set -e \
     && curl -L https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip \
     && echo "$TERRAFORM_SHA256  terraform.zip" | sha256sum -c \
     && unzip terraform.zip -d /usr/local/bin \
     && chmod +x /usr/local/bin/terraform \
-    && rm -f terraform.zip
-
+    && rm -f terraform.zip \
 # terragrunt
-RUN set -e \
     && curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /tmp/terragrunt \
     && echo "$TERRAGRUNT_SHA256  terragrunt" | sha256sum -c \
     && mv /tmp/terragrunt /usr/local/bin \
-    && chmod +x /usr/local/bin/terragrunt
-
+    && chmod +x /usr/local/bin/terragrunt \
 # terraform-ct-provider
-RUN set -e \
     && curl -L https://github.com/coreos/terraform-provider-ct/releases/download/v${TERRAFORM_CT_PROVIDER_VERSION}/terraform-provider-ct-v${TERRAFORM_CT_PROVIDER_VERSION}-linux-amd64.tar.gz -o /tmp/terraform-ct-provider.tar.gz \
     && echo "$TERRAFORM_CT_PROVIDER_SHA256  terraform-ct-provider.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/terraform-ct-provider.tar.gz  -C /tmp \
     && mv /tmp/terraform-provider-ct-v${TERRAFORM_CT_PROVIDER_VERSION}-linux-amd64/terraform-provider-ct /usr/local/bin \
-    && rm -f /tmp/terraform-ct-provider.tar.gz
-
+    && rm -f /tmp/terraform-ct-provider.tar.gz \
 # bash_unit
-RUN set -e \
     && curl -L https://github.com/pgrange/bash_unit/archive/v${BASH_UNIT_VERSION}.tar.gz -o /tmp/bash_unit.tar.gz \
     && echo "$BASH_UNIT_SHA256  bash_unit.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/bash_unit.tar.gz  -C /tmp \
     && mv /tmp/bash_unit-${BASH_UNIT_VERSION}/bash_unit /usr/local/bin \
     && chmod a+x /usr/local/bin \
-    && rm -f /tmp/bash_unit.tar.gz
-
+    && rm -f /tmp/bash_unit.tar.gz \
 # kubecfg
-RUN set -e \
     && curl -L https://github.com/ksonnet/kubecfg/releases/download/v${KUBECFG_VERSION}/kubecfg-linux-amd64 -o /tmp/kubecfg \
     && chmod +x /tmp/kubecfg \
     && echo "$KUBECFG_SHA256  kubecfg" | sha256sum -c \
-    && mv /tmp/kubecfg /usr/local/bin
-
+    && mv /tmp/kubecfg /usr/local/bin \
 # kubeseal
-RUN set -e \
     && curl -L https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-linux-amd64 -o /tmp/kubeseal \
     && chmod +x /tmp/kubeseal \
     && echo "$KUBESEAL_SHA256  kubeseal" | sha256sum -c \
-    && mv /tmp/kubeseal /usr/local/bin
-
+    && mv /tmp/kubeseal /usr/local/bin \
 # JQ
-RUN set -e \
     && curl -L https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -o /tmp/jq \
     && chmod +x /tmp/jq \
     && echo "$JQ_SHA256  jq" | sha256sum -c \
-    && mv /tmp/jq /usr/local/bin
-
+    && mv /tmp/jq /usr/local/bin \
 # testssl.sh
-RUN set -e \
     && curl -L https://github.com/drwetter/testssl.sh/archive/${TEST_SSL_VERSION}.tar.gz -o /tmp/testssl.tar.gz \
     && echo "$TEST_SSL_SHA256  testssl.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/testssl.tar.gz  -C /tmp \
     && mv /tmp/testssl.sh-${TEST_SSL_VERSION} /tmp/testssl.sh \
-    && rm -f /tmp/testssl.tar.gz
-
+    && rm -f /tmp/testssl.tar.gz \
 # Kind
-RUN set -e \
     && wget -q -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64 \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
-    && echo "$KIND_SHA256  kind" | sha256sum -c
-
-## TODO - clean build requirements
-# git-crypt
-RUN set -e \
-    && curl -L https://github.com/AGWA/git-crypt/archive/$GITCRYPT_VERSION.tar.gz -o /tmp/git-crypt.tar.gz \
-    && echo "$GITCRYPT_SHA256  git-crypt.tar.gz" | sha256sum -c \
-    && tar zxvf /tmp/git-crypt.tar.gz  -C /tmp \
-    && cd /tmp/git-crypt-$GITCRYPT_VERSION && make && make install PREFIX=/usr/local \
-    && rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION
+    && echo "$KIND_SHA256  kind" | sha256sum -c \
+    && cd -
 
 # Install LETSENCRYPT staging fake root ca
 RUN set -e \
