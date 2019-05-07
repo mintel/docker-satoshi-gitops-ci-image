@@ -4,7 +4,9 @@ LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    LANG=en_US.UTF-8  
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 RUN apt-get -y update && \
     apt-get -y install \
@@ -36,7 +38,8 @@ RUN apt-get -y update && \
     apt-get -y update && \
     apt-get -y install docker-ce-cli google-cloud-sdk && \
     apt-get -y purge aptitude && \
-     apt-get -y autoremove && apt-get -y clean
+    apt-get -y autoremove && apt-get -y clean && \
+    locale-gen
 
 
 ENV YAML2JSON_VERSION=1.3 \
