@@ -4,11 +4,16 @@ LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8
+    LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8"
 
 RUN apt-get -y update && \
+    apt-get -y install locales && \
+    echo "LC_ALL=$LC_ALL" >> /etc/environment && \
+    echo "LANG=$LANG" > /etc/local.conf && \
+    echo -n "$LC_ALL" > /etc/locale.gen && \
+    locale-gen "en_US.UTF-8" && \
     apt-get -y install \
       apt-transport-https \
       bash \
@@ -19,6 +24,7 @@ RUN apt-get -y update && \
       git \
       gnupg2 \
       g++ \
+      locales \
       libssl-dev \
       make \
       openssl \
@@ -38,8 +44,7 @@ RUN apt-get -y update && \
     apt-get -y update && \
     apt-get -y install docker-ce-cli google-cloud-sdk && \
     apt-get -y purge aptitude && \
-    apt-get -y autoremove && apt-get -y clean && \
-    locale-gen
+    apt-get -y autoremove && apt-get -y clean
 
 
 ENV YAML2JSON_VERSION=1.3 \
