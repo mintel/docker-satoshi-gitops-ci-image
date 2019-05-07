@@ -4,16 +4,12 @@ LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    LANG="en_US.UTF-8" \
-    LANGUAGE="en_US.UTF-8" \
-    LC_ALL="en_US.UTF-8"
+    LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    LC_TYPE=C.UTF-8
 
 RUN apt-get -y update && \
-    apt-get -y install locales && \
-    echo "LC_ALL=$LC_ALL" >> /etc/environment && \
-    echo "LANG=$LANG" > /etc/locale.conf && \
-    echo -n "$LC_ALL" > /etc/locale.gen && \
-    locale-gen "en_US.UTF-8" && \
     apt-get -y install \
       apt-transport-https \
       bash \
