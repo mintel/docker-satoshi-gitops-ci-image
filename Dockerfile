@@ -104,7 +104,9 @@ ENV YAML2JSON_VERSION=1.3 \
     TEST_SSL_VERSION=3.0rc5 \
     TEST_SSL_SHA256=6118f08b88c0075f39820296f0d76889165dd67e64dbfdfd1104d6d122a938c9 \
     KUBESEAL_VERSION=0.5.1 \
-    KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9
+    KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9 \
+    ATLANTIS_VERSION=0.7.2 \
+    ATLANTIS_SHA256=4bee1a9134593a232035be42fb669b9ea10783df75dc2c167a365c700364b533
 
 
 #yaml2json
@@ -190,6 +192,12 @@ RUN set -e \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
     && echo "$KIND_SHA256  kind" | sha256sum -c \
+# atlantis
+    && wget -q -O /tmp/atlantis.zip https://github.com/runatlantis/atlantis/releases/download/v${ATLANTIS_VERSION}/atlantis_linux_amd64.zip \
+    && echo "$ATLANTIS_SHA256  atlantis.zip" | sha256sum -c \
+    && unzip atlantis.zip -d /usr/local/bin \
+    && chmod +x /usr/local/bin/atlantis \
+    && rm -f atlantis.zip \
     && cd -
 
 # Install LETSENCRYPT staging fake root ca
