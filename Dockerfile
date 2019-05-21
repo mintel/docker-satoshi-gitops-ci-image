@@ -192,13 +192,13 @@ RUN set -e \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
     && echo "$KIND_SHA256  kind" | sha256sum -c \
+    && cd - \
 # atlantis
-    && wget -q -O /tmp/atlantis.zip https://github.com/runatlantis/atlantis/releases/download/v${ATLANTIS_VERSION}/atlantis_linux_amd64.zip \
+    && wget -q -O atlantis.zip https://github.com/runatlantis/atlantis/releases/download/v${ATLANTIS_VERSION}/atlantis_linux_amd64.zip \
     && echo "$ATLANTIS_SHA256  atlantis.zip" | sha256sum -c \
     && unzip atlantis.zip -d /usr/local/bin \
     && chmod +x /usr/local/bin/atlantis \
-    && rm -f atlantis.zip \
-    && cd -
+    && rm -f atlantis.zip
 
 # Install LETSENCRYPT staging fake root ca
 RUN set -e \
