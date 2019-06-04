@@ -5,10 +5,17 @@ K8S_WORKERS="${KIND_NODES:-1}"
 KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
+function install_cni() {
+	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+}
+
 function start_kind() {
 	cat > /tmp/kind-config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.sigs.k8s.io/v1alpha3
+networking:
+  # Disable default CNI and install flannel to get around DIND issues
+  disableDefaultCNI: true
 nodes:
 - role: control-plane
   image: kindest/node:${K8S_VERSION}
@@ -35,7 +42,9 @@ EOF
 	if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then	
  		sed -i -e "s/localhost/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
 	fi
-    
+
+	install_cni
+
 	kubectl cluster-info
 
 	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
@@ -44,7 +53,6 @@ EOF
   # One pod ( or more ) is reported as not available 
   # Sleep for now
   sleep 15
-  # kubectl -n kube-system rollout status daemonset/weave-net --timeout=180s
 
 	kubectl get pods --all-namespaces
 }
