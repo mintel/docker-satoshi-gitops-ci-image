@@ -13,9 +13,6 @@ function start_kind() {
 	cat > /tmp/kind-config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.sigs.k8s.io/v1alpha3
-networking:
-  # Disable default CNI and install flannel to get around DIND issues
-  disableDefaultCNI: true
 nodes:
 - role: control-plane
   image: kindest/node:${K8S_VERSION}
@@ -34,6 +31,8 @@ EOF
 	cat >> /tmp/kind-config.yaml <<EOF
 networking:
   apiServerAddress: 0.0.0.0
+  # Disable default CNI and install flannel to get around DIND issues
+  disableDefaultCNI: true
 EOF
 
 	kind create cluster --config /tmp/kind-config.yaml
