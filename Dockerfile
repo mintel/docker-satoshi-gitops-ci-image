@@ -206,7 +206,7 @@ RUN set -e \
     && curl -o /usr/local/share/ca-certificates/fakeleintermediatex1.crt https://letsencrypt.org/certs/fakeleintermediatex1.pem \
     && update-ca-certificates
 
-COPY --from=mintel/k8s-yaml-splitter /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
+COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
 
 USER 0
 COPY resources/ /
