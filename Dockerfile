@@ -87,8 +87,8 @@ ENV YAML2JSON_VERSION=1.3 \
     KUBECTL_SHA256=f52abcfbcb74f590a2229364afee11271ce597add3eeceefc1dc174590e2dff8 \
     VAULT_VERSION=1.1.1 \
     VAULT_SHA256=134261417c8129a92992cba75bf7ebce8ee4d6100de18b722cce7507782e272c \
-    KIND_VERSION=0.2.1 \
-    KIND_SHA256=4493aaaffb997a07ef15f04ae0ed1b935cd4b648885b79f4fd48977ff4906b8d \
+    KIND_VERSION=0.3.0 \
+    KIND_SHA256=4d133e28c639595eaafce281cc2508a1bf9aa901259b23e749a97a3e712b6f36 \
     TERRAFORM_VERSION=0.11.13 \
     TERRAFORM_SHA256=5925cd4d81e7d8f42a0054df2aafd66e2ab7408dbed2bd748f0022cfe592f8d2 \
     TERRAGRUNT_VERSION=0.18.4 \
@@ -188,7 +188,7 @@ RUN set -e \
     && mv /tmp/testssl.sh-${TEST_SSL_VERSION} /tmp/testssl.sh \
     && rm -f /tmp/testssl.tar.gz \
 # Kind
-    && wget -q -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64 \
+    && wget -q -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
     && echo "$KIND_SHA256  kind" | sha256sum -c \
