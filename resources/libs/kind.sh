@@ -4,9 +4,10 @@ K8S_VERSION="${K8S_VERSION:-v1.12.8@sha256:cc6e1a928a85c14b52e32ea97a198393fb680
 K8S_WORKERS="${KIND_NODES:-1}"
 KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
+CNI_FLANNEL_VERSION="${CNI_FLANNEL_VERSION:-v0.11.0}"
 
 function install_cni() {
-	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/${CNI_FLANNEL_VERSION}/Documentation/kube-flannel.yml
 }
 
 function start_kind() {
