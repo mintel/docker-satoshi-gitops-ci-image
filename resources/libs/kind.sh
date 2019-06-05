@@ -48,11 +48,6 @@ EOF
 
 	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
 	kubectl -n kube-system rollout status daemonset/kube-proxy --timeout=180s
-  # This rollout wait fail sometimes even though i think the pods are running
-  # One pod ( or more ) is reported as not available 
-  # Sleep for now
-  sleep 15
-
 	kubectl get pods --all-namespaces
 }
 
