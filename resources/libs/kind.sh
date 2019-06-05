@@ -4,6 +4,11 @@ K8S_VERSION="${K8S_VERSION:-v1.12.8@sha256:cc6e1a928a85c14b52e32ea97a198393fb680
 K8S_WORKERS="${KIND_NODES:-1}"
 KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
+CNI_FLANNEL_VERSION="${CNI_FLANNEL_VERSION:-v0.11.0}"
+
+function install_cni() {
+	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/${CNI_FLANNEL_VERSION}/Documentation/kube-flannel.yml
+}
 
 function start_kind() {
 	cat > /tmp/kind-config.yaml <<EOF
@@ -27,6 +32,8 @@ EOF
 	cat >> /tmp/kind-config.yaml <<EOF
 networking:
   apiServerAddress: 0.0.0.0
+  # Disable default CNI and install flannel to get around DIND issues
+  disableDefaultCNI: true
 EOF
 
 	kind create cluster --config /tmp/kind-config.yaml
@@ -35,17 +42,13 @@ EOF
 	if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then	
  		sed -i -e "s/localhost/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
 	fi
-    
+
+	install_cni
+
 	kubectl cluster-info
 
 	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
 	kubectl -n kube-system rollout status daemonset/kube-proxy --timeout=180s
-  # This rollout wait fail sometimes even though i think the pods are running
-  # One pod ( or more ) is reported as not available 
-  # Sleep for now
-  sleep 15
-  # kubectl -n kube-system rollout status daemonset/weave-net --timeout=180s
-
 	kubectl get pods --all-namespaces
 }
 
