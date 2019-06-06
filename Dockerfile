@@ -81,8 +81,6 @@ ENV YAML2JSON_VERSION=1.3 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
     KUSTOMIZE_VERSION=2.0.3 \
     KUSTOMIZE_SHA256=a04d79a013827c9ebb0abfe9d41cbcedf507a0310386c8d9a7efec7a36f9d7a3 \
-    MINIKUBE_VERSION=1.0.1 \
-    MINIKUBE_SHA256=7b56374955990ef2dd0289e6ecb62cf2b4587cab2b481d95f58de5db56799868 \
     KUBECTL_VERSION=1.12.5 \
     KUBECTL_SHA256=f52abcfbcb74f590a2229364afee11271ce597add3eeceefc1dc174590e2dff8 \
     VAULT_VERSION=1.1.1 \
@@ -123,11 +121,6 @@ RUN set -e \
     && chmod +x /usr/local/bin/kustomize \
     && cd /usr/local/bin \
     && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
-# minikube
-    && wget -q -O /usr/local/bin/minikube https://github.com/kubernetes/minikube/releases/download/v${MINIKUBE_VERSION}/minikube-linux-amd64 \
-    && chmod +x /usr/local/bin/minikube \
-    && cd /usr/local/bin \
-    && echo "$MINIKUBE_SHA256  minikube" | sha256sum -c \
 # kubectl
     && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
