@@ -83,8 +83,12 @@ ENV YAML2JSON_VERSION=1.3 \
     KUSTOMIZE_SHA256=a04d79a013827c9ebb0abfe9d41cbcedf507a0310386c8d9a7efec7a36f9d7a3 \
     KUBECTL_VERSION=1.12.5 \
     KUBECTL_SHA256=f52abcfbcb74f590a2229364afee11271ce597add3eeceefc1dc174590e2dff8 \
-    VAULT_VERSION=1.1.1 \
-    VAULT_SHA256=134261417c8129a92992cba75bf7ebce8ee4d6100de18b722cce7507782e272c \
+    VAULT_VERSION=1.1.3 \
+    VAULT_SHA256=293b88f4d31f6bcdcc8b508eccb7b856a0423270adebfa0f52f04144c5a22ae0 \
+    VAULT_SIDEKICK_VERSION=0.3.10 \
+    VAULT_SIDEKICK_SHA256=484c6ae5f47ba01989b176f3eb7ce565c3edcce31522187c74129d58cbf829b5 \
+    DUMB_INIT_VERSION=1.2.2 \
+    DUMB_INIT_SHA256=37f2c1f0372a45554f1b89924fbb134fc24c3756efaedf11e07f599494e0eff9 \
     KIND_VERSION=0.3.0 \
     KIND_SHA256=4d133e28c639595eaafce281cc2508a1bf9aa901259b23e749a97a3e712b6f36 \
     TERRAFORM_VERSION=0.11.13 \
@@ -133,47 +137,58 @@ RUN set -e \
     && unzip vault.zip -d /usr/local/bin \
     && chmod +x /usr/local/bin/vault \
     && rm -f vault.zip \
+# vault-sidekick
+    && wget -q -O /usr/local/bin/vault-sidekick https://github.com/UKHomeOffice/vault-sidekick/releases/download/v${VAULT_SIDEKICK_VERSION}/vault-sidekick_linux_amd64 \
+    && chmod +x /usr/local/bin/vault-sidekick \
+    && cd /usr/local/bin \
+    && echo "$VAULT_SIDEKICK_SHA256  vault-sidekick" | sha256sum -c \
+# dumb-init
+    && wget -q -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 \
+    && chmod +x /usr/local/bin/dumb-init \
+    && cd /usr/local/bin \
+    && echo "$DUMB_INIT_SHA256  dumb-init" | sha256sum -c \
 # terraform
-    && curl -L https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip \
+    && cd /tmp \
+    && wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -O /tmp/terraform.zip \
     && echo "$TERRAFORM_SHA256  terraform.zip" | sha256sum -c \
     && unzip terraform.zip -d /usr/local/bin \
     && chmod +x /usr/local/bin/terraform \
     && rm -f terraform.zip \
 # terragrunt
-    && curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /tmp/terragrunt \
+    && wget -q https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -O /tmp/terragrunt \
     && echo "$TERRAGRUNT_SHA256  terragrunt" | sha256sum -c \
     && mv /tmp/terragrunt /usr/local/bin \
     && chmod +x /usr/local/bin/terragrunt \
 # terraform-ct-provider
-    && curl -L https://github.com/coreos/terraform-provider-ct/releases/download/v${TERRAFORM_CT_PROVIDER_VERSION}/terraform-provider-ct-v${TERRAFORM_CT_PROVIDER_VERSION}-linux-amd64.tar.gz -o /tmp/terraform-ct-provider.tar.gz \
+    && wget -q  https://github.com/coreos/terraform-provider-ct/releases/download/v${TERRAFORM_CT_PROVIDER_VERSION}/terraform-provider-ct-v${TERRAFORM_CT_PROVIDER_VERSION}-linux-amd64.tar.gz -O /tmp/terraform-ct-provider.tar.gz \
     && echo "$TERRAFORM_CT_PROVIDER_SHA256  terraform-ct-provider.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/terraform-ct-provider.tar.gz  -C /tmp \
     && mv /tmp/terraform-provider-ct-v${TERRAFORM_CT_PROVIDER_VERSION}-linux-amd64/terraform-provider-ct /usr/local/bin \
     && rm -f /tmp/terraform-ct-provider.tar.gz \
 # bash_unit
-    && curl -L https://github.com/pgrange/bash_unit/archive/v${BASH_UNIT_VERSION}.tar.gz -o /tmp/bash_unit.tar.gz \
+    && wget -q https://github.com/pgrange/bash_unit/archive/v${BASH_UNIT_VERSION}.tar.gz -O /tmp/bash_unit.tar.gz \
     && echo "$BASH_UNIT_SHA256  bash_unit.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/bash_unit.tar.gz  -C /tmp \
     && mv /tmp/bash_unit-${BASH_UNIT_VERSION}/bash_unit /usr/local/bin \
     && chmod a+x /usr/local/bin \
     && rm -f /tmp/bash_unit.tar.gz \
 # kubecfg
-    && curl -L https://github.com/ksonnet/kubecfg/releases/download/v${KUBECFG_VERSION}/kubecfg-linux-amd64 -o /tmp/kubecfg \
+    && wget -q https://github.com/ksonnet/kubecfg/releases/download/v${KUBECFG_VERSION}/kubecfg-linux-amd64 -O /tmp/kubecfg \
     && chmod +x /tmp/kubecfg \
     && echo "$KUBECFG_SHA256  kubecfg" | sha256sum -c \
     && mv /tmp/kubecfg /usr/local/bin \
 # kubeseal
-    && curl -L https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-linux-amd64 -o /tmp/kubeseal \
+    && wget -q https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-linux-amd64 -O /tmp/kubeseal \
     && chmod +x /tmp/kubeseal \
     && echo "$KUBESEAL_SHA256  kubeseal" | sha256sum -c \
     && mv /tmp/kubeseal /usr/local/bin \
 # JQ
-    && curl -L https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -o /tmp/jq \
+    && wget -q https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -O /tmp/jq \
     && chmod +x /tmp/jq \
     && echo "$JQ_SHA256  jq" | sha256sum -c \
     && mv /tmp/jq /usr/local/bin \
 # testssl.sh
-    && curl -L https://github.com/drwetter/testssl.sh/archive/${TEST_SSL_VERSION}.tar.gz -o /tmp/testssl.tar.gz \
+    && wget -q https://github.com/drwetter/testssl.sh/archive/${TEST_SSL_VERSION}.tar.gz -O /tmp/testssl.tar.gz \
     && echo "$TEST_SSL_SHA256  testssl.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/testssl.tar.gz  -C /tmp \
     && mv /tmp/testssl.sh-${TEST_SSL_VERSION} /tmp/testssl.sh \
