@@ -214,7 +214,7 @@ RUN useradd -ms /bin/bash mintel
 USER mintel
 
 RUN set -e \
-    && pip3 install yamllint
+    && pip3 install yamllint docker-compose
 
 # Configure support for terraform-ct-provider
 RUN echo 'providers {\n \
