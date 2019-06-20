@@ -208,7 +208,6 @@ RUN set -e \
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
 
 USER 0
-COPY resources/ /
 
 RUN useradd -ms /bin/bash mintel
 USER mintel
@@ -223,6 +222,10 @@ ct = "/usr/local/bin/terraform-provider-ct"\n \
 
 # Extend PATH for mintel user
 RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
+
+USER 0
+COPY resources/ /
+USER mintel
 
 ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \

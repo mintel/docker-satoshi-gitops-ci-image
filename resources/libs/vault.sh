@@ -5,14 +5,12 @@ VAULT_VERSION="${VAULT_VERSION:-1.1.3}"
 VAULT_DEV_ROOT_TOKEN="${VAULT_DEV_ROOT_TOKEN:-e59546c1-3383-497a-8024-aaf2a400064a}"
 BANK_VAULTS_IMAGE="${BANK_VAULTS_IMAGE:-banzaicloud/bank-vaults}"
 BANK_VAULTS_VERSION="${BANK_VAULT_VERSION:-master}"
+GITOPS_CI_CONTAINER_IMAGE="${GITOPS_CI_CONTAINER_IMAGE:-mintel/satoshi-gitops-ci}"
+GITOPS_CI_CONTAINER_VERSION="${GITOPS_CI_CONTAINER_VERSION:-0.4.0}"
 POLICIES_DIR="${POLICIES_DIR}"
 CONFS_DIR="/tmp/confs"
 
 [[ -z $POLICIES_DIR ]] && ( printf "\n\nPOLICIES_DIR Undefined\n" && exit 1 )
-
-function build_bank_vaults_configs_list {
-printf "\n## "
-}
 
 function extract_vault_configs_from_manifests {
   mkdir -p $CONFS_DIR
@@ -24,9 +22,10 @@ function extract_vault_configs_from_manifests {
 
     mkdir -p $CONFS_DIR/$env/kustomize
     mkdir -p $CONFS_DIR/$env/yamls
-    kustomize build $env > $CONFS_DIR/$env/kustomize/manifests.yaml
+    kustomize build $(dirname $k) > $CONFS_DIR/$env/kustomize/manifests.yaml
 
-    N_DOCS=$(cat $CONFS/$env/kustomize/manifests.yaml| egrep ^kind | wc -l)
+    file=$CONFS_DIR/$env/kustomize/manifests.yaml
+    N_DOCS=$(cat $file | egrep ^kind | wc -l)
 
     let N_DOCS-=1
 
@@ -53,26 +52,60 @@ function extract_vault_configs_from_manifests {
     done 
     
   done
+}
 
+function build_bank_vaults_configs_list {
+  local e=$1
+  local CONFS_STRING=""
+
+  for file in `ls -1 $CONFS_DIR/$e/yamls`; do
+    CONFS_STRING="${CONFS_STRING}--vault-config-file=$CONFS_DIR/$e/yamls/${file} "
+  done
+ 
+  echo $CONFS_STRING
 }
 
 function check_vault_policies() {
-  printf "\n## Extracting Configs from Kubernetes Vault Policies manifests ##\n"
-  docker run --rm -v $CI_PROJECT_DIR:/project -v /tmp:/tmp mintel/satoshi-gitops-ci:latest /scripts/vault/extract-vault-configs-from-manifest.sh /project/$POLICIES_DIR
-  export CONFS=$(docker run --rm  -v /tmp:/tmp mintel/satoshi-gitops-ci:latest /scripts/vault/build-bank-vaults-confgs-list.sh)
+  set -e
+  docker pull vault:$VAULT_VERSION  | grep -e 'Pulling from' -e Digest -e Status -e Error
+  docker pull $BANK_VAULTS_IMAGE:$BANK_VAULTS_VERSION  | grep -e 'Pulling from' -e Digest -e Status -e Error
+  docker pull $GITOPS_CI_CONTAINER_IMAGE:$GITOPS_CI_CONTAINER_VERSION  | grep -e 'Pulling from' -e Digest -e Status -e Error
 
-  printf "\n## Starting Vault Server ##\n"
-  docker run -d --net=host -e SKIP_SETCAP=true -e VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN} vault:$VAULT_VERSION server -dev -dev-listen-address=0.0.0.0:8200
-  printf "\n## Starting Configurator ##\n"
-  docker run --rm --net=host -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 -v /tmp:/tmp $BANK_VAULTS_IMAGE:$BANK_VAULTS_VERSION configure --once --fatal --mode dev $CONFS
+  printf "\n##########################################################"
+  printf "\n## extracting Policies from manifests for all Environments"
+  printf "\n##########################################################\n"
+  docker run --rm --net=host --name extractor -v /tmp:/tmp -v $CI_PROJECT_DIR:$CI_PROJECT_DIR -e POLICIES_DIR=$POLICIES_DIR -e CI_PROJECT_DIR=$CI_PROJECT_DIR $GITOPS_CI_CONTAINER_IMAGE:$GITOPS_CI_CONTAINER_VERSION bash -c "source /libs/vault.sh && extract_vault_configs_from_manifests && tree /tmp/confs"
 
-  printf "\n## Vault status ##\n"
-  docker run --rm --net=host -e SKIP_SETCAP=true -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 vault:$VAULT_VERSION status
-  printf "\n## Vault policies ##\n"
-  docker run --rm --net=host -e SKIP_SETCAP=true -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 vault:$VAULT_VERSION policy list
-  printf "\n## Vault secrets ##\n"
-  docker run --rm --net=host -e SKIP_SETCAP=true -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 vault:$VAULT_VERSION secrets list
-  printf "\n## Vault auth ##\n"
-  docker run --rm --net=host -e SKIP_SETCAP=true -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 vault:$VAULT_VERSION auth list
+  local ENVS
+  ENVS=$(docker run --rm --net=host --name envs -v /tmp:/tmp $GITOPS_CI_CONTAINER_IMAGE:$GITOPS_CI_CONTAINER_VERSION bash -c "ls -1 $CONFS_DIR")
+
+  printf "\n##########################################################"
+  printf "\n## Testing policies for all Environments"
+  printf "\n##########################################################\n"
+
+  for env in $ENVS; do
+    printf "\n##########################################################"
+    printf "\n## ENV: $env\n"
+    
+    printf "\n## Starting Vault\n"
+    docker run -d --net=host --name vault -e SKIP_SETCAP=true -e VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN} vault:$VAULT_VERSION server -dev -dev-listen-address=0.0.0.0:8200
+
+    printf "\n## Starting Configurator ##\n"
+    local CONFS
+    CONFS=$(docker run --rm --net=host --name confstring -v /tmp:/tmp $GITOPS_CI_CONTAINER_IMAGE:$GITOPS_CI_CONTAINER_VERSION bash -c "source /libs/vault.sh && build_bank_vaults_configs_list $env")
+  
+    docker run --rm --net=host --name configurator -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 -v /tmp:/tmp $BANK_VAULTS_IMAGE:$BANK_VAULTS_VERSION configure --once --fatal --mode dev $CONFS
+
+    printf "\n## Vault status ##\n"
+    docker run --rm --net=host --name report -e SKIP_SETCAP=true -e VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN} -e VAULT_ADDR=http://127.0.0.1:8200 --entrypoint sh vault:$VAULT_VERSION -c "vault status && echo \" - Policies\" && vault policy list && echo \" - Secrets\" && vault secrets list && echo \" - Auth\" && vault auth list"
+
+    printf "\n## Stopping and Removing Vault\n"
+    docker stop vault && docker rm vault
+
+    printf "\n##########################################################\n"
+
+  done
+
+
 }
 
