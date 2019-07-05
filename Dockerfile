@@ -206,6 +206,7 @@ RUN set -e \
     && update-ca-certificates
 
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
+COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
 
 USER 0
 
