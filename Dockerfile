@@ -39,6 +39,7 @@ RUN apt-get -y update && \
       dnsutils \
       ca-certificates \
       curl \
+      gettext-base \
       git \
       gnupg2 \
       g++ \
