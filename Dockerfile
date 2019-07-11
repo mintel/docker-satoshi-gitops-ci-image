@@ -8,7 +8,6 @@ RUN go get github.com/palantir/tfjson
 
 RUN go get github.com/kvz/json2hcl
 
-
 ##
 # Main Image
 ##
@@ -122,7 +121,9 @@ ENV YAML2JSON_VERSION=1.3 \
     TEST_SSL_VERSION=3.0rc5 \
     TEST_SSL_SHA256=6118f08b88c0075f39820296f0d76889165dd67e64dbfdfd1104d6d122a938c9 \
     KUBESEAL_VERSION=0.5.1 \
-    KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9
+    KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9 \
+    CONFTEST_VERSION=0.8.1 \
+    CONFTEST_SHA256=0bbe13e65dbf0d6c4fa4b1690894d454fb0825299f759e42302fd88d0860e560
 
 
 #yaml2json
@@ -213,7 +214,14 @@ RUN set -e \
     && wget -q -O /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
-    && echo "$KIND_SHA256  kind" | sha256sum -c
+    && echo "$KIND_SHA256  kind" | sha256sum -c \
+# conftest
+    && wget -q https://github.com/instrumenta/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz -O /tmp/conftest.tar.gz \
+    && echo "$CONFTEST_SHA256  conftest.tar.gz" | sha256sum -c \
+    && tar zxvf /tmp/conftest.tar.gz  -C /tmp \
+    && mv /tmp/conftest /usr/local/bin/conftest \
+    && chmod a+x /usr/local/bin/conftest \
+    && rm -f /tmp/conftest*
 
 # Install LETSENCRYPT staging fake root ca
 RUN set -e \
@@ -223,7 +231,6 @@ RUN set -e \
 
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
 COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
-COPY --from=instrumenta/conftest:v0.8.1 /usr/local/bin/conftest /usr/local/bin/conftest
 COPY --from=openpolicyagent/opa:0.12.1 /opa /usr/local/bin/opa
 COPY --from=builder /go/bin/tfjson /usr/local/bin/tfjson
 COPY --from=builder /go/bin/json2hcl /usr/local/bin/json2hcl
