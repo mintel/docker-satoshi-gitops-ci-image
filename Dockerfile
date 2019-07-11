@@ -217,10 +217,12 @@ RUN set -e \
     && echo "$KIND_SHA256  kind" | sha256sum -c \
 # conftest
     && wget -q https://github.com/instrumenta/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz -O /tmp/conftest.tar.gz \
+    && cd /tmp \
     && echo "$CONFTEST_SHA256  conftest.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/conftest.tar.gz  -C /tmp \
     && mv /tmp/conftest /usr/local/bin/conftest \
     && chmod a+x /usr/local/bin/conftest \
+    && cd - \
     && rm -f /tmp/conftest*
 
 # Install LETSENCRYPT staging fake root ca
