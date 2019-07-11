@@ -2,7 +2,7 @@
 # Builders
 ##
 
-FROM golang:1.12 AS builder
+FROM golang:1.12-stretch AS builder
 
 RUN go get github.com/palantir/tfjson
 
