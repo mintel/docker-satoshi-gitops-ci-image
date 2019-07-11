@@ -4,7 +4,8 @@
 
 FROM golang:1.12-stretch AS builder
 
-RUN go get github.com/palantir/tfjson
+# Until terraform0.12 need tfjson2
+RUN go get github.com/justinm/tfjson2
 
 RUN go get github.com/kvz/json2hcl
 
@@ -234,7 +235,7 @@ RUN set -e \
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
 COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
 COPY --from=openpolicyagent/opa:0.12.1 /opa /usr/local/bin/opa
-COPY --from=builder /go/bin/tfjson /usr/local/bin/tfjson
+COPY --from=builder /go/bin/tfjson2 /usr/local/bin/tfjson2
 COPY --from=builder /go/bin/json2hcl /usr/local/bin/json2hcl
 
 
