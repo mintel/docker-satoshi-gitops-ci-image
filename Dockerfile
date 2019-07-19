@@ -13,7 +13,7 @@ RUN go get github.com/kvz/json2hcl
 # Main Image
 ##
 
-FROM debian:9-slim
+FROM debian:10-slim
 
 LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
@@ -57,10 +57,13 @@ RUN apt-get -y update && \
       gettext-base \
       git \
       gnupg2 \
+      golang \
       g++ \
       locales \
       libssl-dev \
       make \
+      nodejs \
+      npm \
       openssl \
       openssh-client \
       pass \
@@ -73,8 +76,8 @@ RUN apt-get -y update && \
       unzip && \
     wget -q -O- https://download.docker.com/linux/debian/gpg | apt-key add - && \
     wget -q -O- https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" >> /etc/apt/sources.list && \
-    echo "deb https://packages.cloud.google.com/apt cloud-sdk-stretch -c -s) main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/debian buster stable" >> /etc/apt/sources.list && \
+    echo "deb https://packages.cloud.google.com/apt cloud-sdk-buster main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
     apt-get -y update && \
     apt-get -y install docker-ce-cli google-cloud-sdk && \
     curl -L https://github.com/google/jsonnet/archive/v${JSONNET_VERSION}.tar.gz -o /tmp/jsonnet.tar.gz && \
@@ -87,8 +90,9 @@ RUN apt-get -y update && \
     tar zxvf /tmp/git-crypt.tar.gz  -C /tmp && \
     cd /tmp/git-crypt-$GITCRYPT_VERSION && make && make install PREFIX=/usr/local && cd - && \
     rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION && \
-    apt-get -y purge aptitude g++ libssl-dev gcc libc-dev && \
-    apt-get -y autoremove && apt-get -y clean
+    # apt-get -y purge aptitude g++ libssl-dev gcc libc-dev && \ # Can't remove since it would remove npm
+    apt-get -y clean
+    #apt-get -y autoremove && apt-get -y clean
 
 
 ENV YAML2JSON_VERSION=1.3 \
@@ -124,7 +128,9 @@ ENV YAML2JSON_VERSION=1.3 \
     KUBESEAL_VERSION=0.5.1 \
     KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9 \
     CONFTEST_VERSION=0.8.1 \
-    CONFTEST_SHA256=0a28a3cb38da91dee8d58c0ce2310e21fd2e8c94771a757cd39a32fa911f6d1d
+    CONFTEST_SHA256=0a28a3cb38da91dee8d58c0ce2310e21fd2e8c94771a757cd39a32fa911f6d1d \
+    AKAMAICLI_VERSION=1.1.4 \
+    AKAMAICLI_SHA256=bd7b6d150c62432398df4f20bfd3032cf701d2b16444309eaa830a1c1823d28b
 
 
 #yaml2json
@@ -216,6 +222,11 @@ RUN set -e \
     && cd /usr/local/bin \
     && chmod +x /usr/local/bin/kind \
     && echo "$KIND_SHA256  kind" | sha256sum -c \
+# AKAMAICLI
+    && wget -q -O /usr/local/bin/akamaicli https://github.com/akamai/cli/releases/download/${AKAMAICLI_VERSION}/akamai-${AKAMAICLI_VERSION}-linuxamd64 \
+    && cd /usr/local/bin \
+    && chmod +x /usr/local/bin/akamaicli \
+    && echo "$AKAMAICLI_SHA256  akamaicli" | sha256sum -c \
 # conftest
     && wget -q https://github.com/instrumenta/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz -O /tmp/conftest.tar.gz \
     && cd /tmp \
@@ -245,7 +256,7 @@ RUN useradd -ms /bin/bash mintel
 USER mintel
 
 RUN set -e \
-    && pip3 install yamllint docker-compose
+    && pip3 install yamllint docker-compose edgegrid-python
 
 # Configure support for terraform-ct-provider
 RUN echo 'providers {\n \
@@ -258,6 +269,27 @@ RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
 USER 0
 COPY resources/ /
 USER mintel
+
+# Configure AKAMAICLI 
+RUN akamaicli config set cli.cache-path /home/mintel/.akamai-cli/cache \
+    && akamaicli config set cli.config-version 1.1 \
+    && akamaicli config set cli.enable-cli-statistics false \
+    && akamaicli config set cli.last-ping $(date +"%Y-%m-%dT%H:%M:%S%:z") \
+    && akamaicli config set cli.client-id ""  \
+    && akamaicli config set cli.install-in-path ""  \
+    && akamaicli config set cli.last-upgrade-check ignore \
+# Install AKAMAICLI Plugins
+# PM 1.0
+    && akamaicli install property --force  \
+# Certificate Provisioning System
+    && akamaicli install cps --force \
+# Fast DNS
+    && akamaicli install dns --force \
+# Firewall and Site Shield
+    && akamaicli install firewall --force \
+# Purge
+    && akamaicli install purge --force
+
 
 ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \
