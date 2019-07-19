@@ -1,8 +1,8 @@
 ##
-# Builders
+# Builder Golang
 ##
 
-FROM golang:1.12-stretch AS builder
+FROM golang:1.12-stretch AS go-builder
 
 # Until terraform0.12 need tfjson2
 RUN go get github.com/justinm/tfjson2
@@ -10,10 +10,49 @@ RUN go get github.com/justinm/tfjson2
 RUN go get github.com/kvz/json2hcl
 
 ##
+# Builder Debian
+##
+
+FROM debian:10-slim as deb-builder
+
+WORKDIR /tmp
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    LC_TYPE=C.UTF-8 \
+    GITCRYPT_VERSION=0.6.0 \
+    GITCRYPT_SHA256=777c0c7aadbbc758b69aff1339ca61697011ef7b92f1d1ee9518a8ee7702bb78 \
+    JSONNET_VERSION=0.12.1 \
+    JSONNET_SHA256=257c6de988f746cc90486d9d0fbd49826832b7a2f0dbdb60a515cc8a2596c950
+
+RUN apt-get -y update && \
+    apt-get -y install locales && \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
+    apt-get -y install \
+      apt-transport-https \
+      curl \
+      g++ \
+      libssl-dev \
+      make && \
+      curl -L https://github.com/google/jsonnet/archive/v${JSONNET_VERSION}.tar.gz -o /tmp/jsonnet.tar.gz && \
+      echo "$JSONNET_SHA256  jsonnet.tar.gz" | sha256sum -c && \
+      tar zxvf /tmp/jsonnet.tar.gz  -C /tmp && \
+      cd /tmp/jsonnet-$JSONNET_VERSION && make && mv jsonnet /usr/local/bin && chmod a+x /usr/local/bin/jsonnet && cd - && \
+      rm -rf /tmp/jsonnet.tar.gz /tmp/jsonnet-$JSONNET_VERSION && \
+      curl -L https://github.com/AGWA/git-crypt/archive/$GITCRYPT_VERSION.tar.gz -o /tmp/git-crypt.tar.gz && \
+      echo "$GITCRYPT_SHA256  git-crypt.tar.gz" | sha256sum -c && \
+      tar zxvf /tmp/git-crypt.tar.gz  -C /tmp && \
+      cd /tmp/git-crypt-$GITCRYPT_VERSION && make && make install PREFIX=/usr/local && cd - && \
+      rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION && \
+      apt-get -y autoremove && apt-get -y clean
+
+##
 # Main Image
 ##
 
-FROM debian:9-slim
+FROM debian:10-slim
 
 LABEL vendor="Mintel"
 LABEL maintainer "fciocchetti@mintel.com"
@@ -39,27 +78,22 @@ RUN echo "path-exclude /usr/share/doc/*" > /etc/dpkg/dpkg.cfg.d/01_nodoc && \
 
 WORKDIR /tmp
 
-ENV GITCRYPT_VERSION=0.6.0 \
-    GITCRYPT_SHA256=777c0c7aadbbc758b69aff1339ca61697011ef7b92f1d1ee9518a8ee7702bb78 \
-    JSONNET_VERSION=0.12.1 \
-    JSONNET_SHA256=257c6de988f746cc90486d9d0fbd49826832b7a2f0dbdb60a515cc8a2596c950
-
 RUN apt-get -y update && \
     apt-get -y install locales && \
     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
     apt-get -y install \
       apt-transport-https \
       bash \
-      bsdmainutils \
-      dnsutils \
+#      bsdmainutils \
+#      dnsutils \
       ca-certificates \
       curl \
       gettext-base \
       git \
       gnupg2 \
-      g++ \
-      locales \
-      libssl-dev \
+#      g++ \
+#      locales \
+#      libssl-dev \
       make \
       openssl \
       openssh-client \
@@ -77,16 +111,6 @@ RUN apt-get -y update && \
     echo "deb https://packages.cloud.google.com/apt cloud-sdk-stretch -c -s) main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
     apt-get -y update && \
     apt-get -y install docker-ce-cli google-cloud-sdk && \
-    curl -L https://github.com/google/jsonnet/archive/v${JSONNET_VERSION}.tar.gz -o /tmp/jsonnet.tar.gz && \
-    echo "$JSONNET_SHA256  jsonnet.tar.gz" | sha256sum -c && \
-    tar zxvf /tmp/jsonnet.tar.gz  -C /tmp && \
-    cd /tmp/jsonnet-$JSONNET_VERSION && make && mv jsonnet /usr/local/bin && chmod a+x /usr/local/bin/jsonnet && cd - && \
-    rm -rf /tmp/jsonnet.tar.gz /tmp/jsonnet-$JSONNET_VERSION && \
-    curl -L https://github.com/AGWA/git-crypt/archive/$GITCRYPT_VERSION.tar.gz -o /tmp/git-crypt.tar.gz && \
-    echo "$GITCRYPT_SHA256  git-crypt.tar.gz" | sha256sum -c && \
-    tar zxvf /tmp/git-crypt.tar.gz  -C /tmp && \
-    cd /tmp/git-crypt-$GITCRYPT_VERSION && make && make install PREFIX=/usr/local && cd - && \
-    rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION && \
     apt-get -y purge aptitude g++ libssl-dev gcc libc-dev && \
     apt-get -y autoremove && apt-get -y clean
 
@@ -235,10 +259,12 @@ RUN set -e \
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
 COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
 COPY --from=openpolicyagent/opa:0.12.1 /opa /usr/local/bin/opa
-COPY --from=builder /go/bin/tfjson2 /usr/local/bin/tfjson2
-COPY --from=builder /go/bin/json2hcl /usr/local/bin/json2hcl
-
-
+COPY --from=go-builder /go/bin/tfjson2 /usr/local/bin/tfjson2
+COPY --from=go-builder /go/bin/json2hcl /usr/local/bin/json2hcl
+COPY --from=deb-builder /usr/local/bin/jsonnet /usr/local/bin/jsonnet
+COPY --from=deb-builder /usr/local/bin/git-crypt /usr/local/bin/git-crypt
+#
+#
 USER 0
 
 RUN useradd -ms /bin/bash mintel
