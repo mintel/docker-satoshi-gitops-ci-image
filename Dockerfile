@@ -85,7 +85,7 @@ RUN apt-get -y update && \
       apt-transport-https \
       bash \
       bsdmainutils \
-#      dnsutils \
+      dnsutils \
       ca-certificates \
       curl \
       gettext-base \
