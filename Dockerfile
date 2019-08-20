@@ -84,7 +84,7 @@ RUN apt-get -y update && \
     apt-get -y install \
       apt-transport-https \
       bash \
-#      bsdmainutils \
+      bsdmainutils \
 #      dnsutils \
       ca-certificates \
       curl \
@@ -94,7 +94,6 @@ RUN apt-get -y update && \
 #      g++ \
 #      locales \
 #      libssl-dev \
-      libdata-hexdump-perl \
       make \
       openssl \
       openssh-client \
