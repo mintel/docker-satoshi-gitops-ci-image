@@ -94,6 +94,7 @@ RUN apt-get -y update && \
 #      g++ \
 #      locales \
 #      libssl-dev \
+      libdata-hexdump-perl \
       make \
       openssl \
       openssh-client \
