@@ -84,6 +84,7 @@ RUN apt-get -y update && \
     apt-get -y install \
       apt-transport-https \
       bash \
+      bash-completion \
       bsdmainutils \
       dnsutils \
       ca-certificates \
@@ -91,9 +92,6 @@ RUN apt-get -y update && \
       gettext-base \
       git \
       gnupg2 \
-#      g++ \
-#      locales \
-#      libssl-dev \
       make \
       openssl \
       openssh-client \
