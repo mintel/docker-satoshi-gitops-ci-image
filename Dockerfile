@@ -89,6 +89,7 @@ RUN apt-get -y update && \
       dnsutils \
       ca-certificates \
       curl \
+      gawk \
       gettext-base \
       git \
       gnupg2 \
