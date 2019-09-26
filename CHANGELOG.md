@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [v0.3.0]
+## [v0.8.0]
 
 ### Changed
 
