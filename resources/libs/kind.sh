@@ -40,7 +40,7 @@ EOF
 
 	export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 	if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then	
-		sed -i -e 's/server: https:\/\/0\.0\.0\.0/server: https://$DOCKER_HOST_ALIAS/' "$KUBECONFIG"
+		sed -i -e "s/server: https:\/\/0\.0\.0\.0/server: https:\/\/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
 	fi
 
 	install_cni
