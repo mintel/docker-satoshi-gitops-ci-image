@@ -5,8 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Bump `kind` to `v0.5.1`
 - Bump `kubectl` to `v1.13.11`
 - Bump default kubernetes to `v1.13.10`
+- Bump `kubecfg` to `v0.13.0`
+- Bump `conftest` to `v0.11.0`
 
 ## [v0.2.0]
 
