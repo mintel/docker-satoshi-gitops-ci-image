@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0]
+
+### Changed
+
+- Bump `kubectl` to `v1.13.11`
+- Bump default kubernetes to `v1.13.10`
+
 ## [v0.2.0]
 
 ### Changed
