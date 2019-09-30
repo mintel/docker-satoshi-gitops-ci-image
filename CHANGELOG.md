@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.9.0]
+
+### Changed
+
+- Bump `kustomize` to `v3.2.1`
+
 ## [v0.8.0]
 
 ### Changed
