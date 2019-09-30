@@ -118,8 +118,8 @@ ENV YAML2JSON_VERSION=1.3 \
     YAML2JSON_SHA256=e792647dd757c974351ea4ad35030852af97ef9bbbfb9594f0c94317e6738e55 \
     YQ_VERSION=2.3.0 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
-    KUSTOMIZE_VERSION=2.0.3 \
-    KUSTOMIZE_SHA256=a04d79a013827c9ebb0abfe9d41cbcedf507a0310386c8d9a7efec7a36f9d7a3 \
+    KUSTOMIZE_VERSION=3.2.1 \
+    KUSTOMIZE_SHA256=a91b38778945e8a63fe70bc7522703a94c1d572d5dcee245e96647359e1fd04b \
     KUBECTL_VERSION=1.13.11 \
     KUBECTL_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
     VAULT_VERSION=1.1.3 \
@@ -162,7 +162,7 @@ RUN set -e \
     && cd /usr/local/bin \
     && echo "$YQ_SHA256  yq" | sha256sum -c \
 # kustomize
-    && wget -q -O /usr/local/bin/kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64 \
+    && wget -q -O /usr/local/bin/kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_kustomize.v${KUSTOMIZE_VERSION}_linux_amd64 \
     && chmod +x /usr/local/bin/kustomize \
     && cd /usr/local/bin \
     && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
