@@ -6,12 +6,14 @@ FROM golang:1.12-stretch AS go-builder
 
 # Until terraform0.12 need tfjson2
 RUN go get github.com/justinm/tfjson2
-
 RUN go get github.com/kvz/json2hcl
 
+# No recent release.
 # https://github.com/jsonnet-bundler/jsonnet-bundler/issues/45
-# Until a new release is published
 RUN go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
+
+# No releases.
+RUN go get github.com/brancz/gojsontoyaml
 
 ##
 # Builder Debian
@@ -265,6 +267,7 @@ COPY --from=openpolicyagent/opa:0.12.1 /opa /usr/local/bin/opa
 COPY --from=prom/prometheus:v2.13.0 /bin/promtool /usr/local/bin/promtool
 
 COPY --from=go-builder /go/bin/tfjson2 /usr/local/bin/tfjson2
+COPY --from=go-builder /go/bin/gojsontoyaml /usr/local/bin/gojsontoyaml
 COPY --from=go-builder /go/bin/json2hcl /usr/local/bin/json2hcl
 COPY --from=go-builder /go/bin/jb /usr/local/bin/jb
 
