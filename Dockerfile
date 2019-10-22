@@ -9,6 +9,10 @@ RUN go get github.com/justinm/tfjson2
 
 RUN go get github.com/kvz/json2hcl
 
+# https://github.com/jsonnet-bundler/jsonnet-bundler/issues/45
+# Until a new release is published
+RUN go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
+
 ##
 # Builder Debian
 ##
@@ -262,6 +266,7 @@ COPY --from=prom/prometheus:v2.13.0 /bin/promtool /usr/local/bin/promtool
 
 COPY --from=go-builder /go/bin/tfjson2 /usr/local/bin/tfjson2
 COPY --from=go-builder /go/bin/json2hcl /usr/local/bin/json2hcl
+COPY --from=go-builder /go/bin/jb /usr/local/bin/jb
 
 COPY --from=deb-builder /usr/local/bin/jsonnet /usr/local/bin/jsonnet
 COPY --from=deb-builder /usr/local/bin/git-crypt /usr/local/bin/git-crypt
