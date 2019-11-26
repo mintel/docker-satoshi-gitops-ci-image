@@ -107,6 +107,7 @@ RUN apt-get -y update && \
       python3-virtualenv \
       python3-pip \
       python3-pkg-resources \
+      rsync \
       software-properties-common \
       wget \
       unzip && \
