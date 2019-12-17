@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.9.2]
+
+### Changed
+- Added SSSS
+
 ## [v0.9.1]
 
 ### Changed
