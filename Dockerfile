@@ -110,7 +110,8 @@ RUN apt-get -y update && \
       software-properties-common \
       wget \
       unzip \
-      pwgen && \
+      pwgen \
+      ssss && \
     wget -q -O- https://download.docker.com/linux/debian/gpg | apt-key add - && \
     wget -q -O- https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" >> /etc/apt/sources.list && \
