@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.9.1]
+
+### Changed
+- Added pwgen
+
 ## [v0.9.0]
 
 ### Changed
