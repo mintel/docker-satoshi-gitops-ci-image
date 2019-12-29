@@ -275,29 +275,18 @@ COPY --from=go-builder /go/bin/jb /usr/local/bin/jb
 
 COPY --from=deb-builder /usr/local/bin/jsonnet /usr/local/bin/jsonnet
 COPY --from=deb-builder /usr/local/bin/git-crypt /usr/local/bin/git-crypt
-#
-#
-USER 0
 
-RUN useradd -ms /bin/bash mintel
-USER mintel
-
-RUN set -e \
-    && pip3 install yamllint docker-compose
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /usr/local/bin/tini
+RUN chmod +x /usr/local/bin/tini
 
 # Configure support for terraform-ct-provider
 RUN echo 'providers {\n \
 ct = "/usr/local/bin/terraform-provider-ct"\n \
-}\n' >> /home/mintel/.terraformrc
+}\n' >> /root/.terraformrc
 
-# Extend PATH for mintel user
-RUN echo 'PATH=$HOME/.local/bin:$PATH' >> /home/mintel/.bashrc
-
-USER 0
 COPY resources/ /
-USER mintel
 
-ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \
     KIND_NODES=1 \
     LANG=en_US.UTF-8 \
@@ -305,5 +294,4 @@ ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
     LC_ALL=en_US.UTF-8 \
     LC_TYPE=en_US.UTF-8
 
-# Don't use a real entrypoint 
-ENTRYPOINT ["/usr/bin/env"]
+ENTRYPOINT ["tini", "--"]
