@@ -279,6 +279,8 @@ COPY --from=deb-builder /usr/local/bin/git-crypt /usr/local/bin/git-crypt
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /usr/local/bin/tini
 RUN chmod +x /usr/local/bin/tini
 
+RUN set -e && pip3 install yamllint docker-compose
+
 # Configure support for terraform-ct-provider
 RUN echo 'providers {\n \
 ct = "/usr/local/bin/terraform-provider-ct"\n \
