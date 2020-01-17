@@ -7,11 +7,11 @@ KIND_REPLACE_CNI="${KIND_REPLACE_CNI:-false}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
 function install_cni() {
-	kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 }
 
 function start_kind() {
-	cat > /tmp/kind-config.yaml <<EOF
+  cat > /tmp/kind-config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -19,45 +19,45 @@ nodes:
   image: kindest/node:${K8S_VERSION}
 EOF
 
-	if [[ $K8S_WORKERS -gt 0 ]]; then
-	for i in $(seq 1 "${K8S_WORKERS}");
-	do
-		cat >> /tmp/kind-config.yaml <<EOF
+  if [[ $K8S_WORKERS -gt 0 ]]; then
+  for i in $(seq 1 "${K8S_WORKERS}");
+  do
+    cat >> /tmp/kind-config.yaml <<EOF
 - role: worker
   image: kindest/node:${K8S_VERSION}
 EOF
-	done
-	fi
+  done
+  fi
   
-	cat >> /tmp/kind-config.yaml <<EOF
+  cat >> /tmp/kind-config.yaml <<EOF
 networking:
   apiServerAddress: 0.0.0.0
 EOF
 
   if [[ "$KIND_REPLACE_CNI" == "true" ]]; then
-	  cat >> /tmp/kind-config.yaml <<EOF
+    cat >> /tmp/kind-config.yaml <<EOF
   # Disable default CNI and install Weave Net to get around DIND issues
   disableDefaultCNI: true
 EOF
   fi
 
-	export KUBECONFIG="${HOME}/.kube/kind-config"
+  export KUBECONFIG="${HOME}/.kube/kind-config"
 
-	kind create cluster --config /tmp/kind-config.yaml
+  kind create cluster --config /tmp/kind-config.yaml
 
-	if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then	
-		sed -i -e "s/server: https:\/\/0\.0\.0\.0/server: https:\/\/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
-	fi
-
-  if [[ "$KIND_REPLACE_CNI" == "true" ]]; then
-	  install_cni
+  if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then  
+    sed -i -e "s/server: https:\/\/0\.0\.0\.0/server: https:\/\/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
   fi
 
-	kubectl cluster-info
+  if [[ "$KIND_REPLACE_CNI" == "true" ]]; then
+    install_cni
+  fi
 
-	kubectl -n kube-system rollout status deployment/coredns --timeout=180s
-	kubectl -n kube-system rollout status daemonset/kube-proxy --timeout=180s
-	kubectl get pods --all-namespaces
+  kubectl cluster-info
+
+  kubectl -n kube-system rollout status deployment/coredns --timeout=180s
+  kubectl -n kube-system rollout status daemonset/kube-proxy --timeout=180s
+  kubectl get pods --all-namespaces
 }
 
 function cluster_report() {
