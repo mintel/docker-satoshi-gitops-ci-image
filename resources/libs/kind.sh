@@ -20,13 +20,13 @@ nodes:
 EOF
 
   if [[ $K8S_WORKERS -gt 0 ]]; then
-  for i in $(seq 1 "${K8S_WORKERS}");
-  do
-    cat >> /tmp/kind-config.yaml <<EOF
+    for i in $(seq 1 "${K8S_WORKERS}");
+    do
+      cat >> /tmp/kind-config.yaml <<EOF
 - role: worker
   image: kindest/node:${K8S_VERSION}
 EOF
-  done
+    done
   fi
   
   cat >> /tmp/kind-config.yaml <<EOF
