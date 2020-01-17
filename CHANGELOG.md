@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 ## [v0.10.0]
 
 ### Added
-
 - Download multiple kubectl versions for automated testing (alongside default for manual use)
 
 ### Changed
