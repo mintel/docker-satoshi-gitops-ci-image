@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.10.0]
 
+### Added
+
+- Download multiple kubectl versions for automated testing (alongside default for manual use)
+
 ### Changed
 - Make Kind CNI replacement optional
 - Change Kind CNI replacement from Flannel to Weave Net
 - Bump `kind` to `v0.7.0`
-- Bump `kubectl` to `v1.14.10`
 - Bump `kubecfg` to `v0.14.0`
 
 ## [v0.9.2]

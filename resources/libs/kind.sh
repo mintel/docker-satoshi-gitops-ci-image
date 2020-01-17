@@ -6,8 +6,10 @@ KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
 KIND_REPLACE_CNI="${KIND_REPLACE_CNI:-false}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
+KUBECTL=$(echo $K8S_VERSION | sed -r "s/(v.*\..*)\..*/kubectl_\1/")
+
 function install_cni() {
-  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+  $KUBECTL apply -f "https://cloud.weave.works/k8s/net?k8s-version=$($KUBECTL version | base64 | tr -d '\n')"
 }
 
 function start_kind() {
@@ -53,39 +55,39 @@ EOF
     install_cni
   fi
 
-  kubectl cluster-info
+  $KUBECTL cluster-info
 
-  kubectl -n kube-system rollout status deployment/coredns --timeout=180s
-  kubectl -n kube-system rollout status daemonset/kube-proxy --timeout=180s
-  kubectl get pods --all-namespaces
+  $KUBECTL -n kube-system rollout status deployment/coredns --timeout=180s
+  $KUBECTL -n kube-system rollout status daemonset/kube-proxy --timeout=180s
+  $KUBECTL get pods --all-namespaces
 }
 
 function cluster_report() {
   printf "\n# Cluster Report\n"
   printf "##############################\n"
   printf "\n\n# Nodes\n"
-  kubectl get nodes -o wide --show-labels
+  $KUBECTL get nodes -o wide --show-labels
 
   printf "\n\n# Namespaces\n"
-  kubectl get namespaces -o wide --show-labels
+  $KUBECTL get namespaces -o wide --show-labels
 
   printf "\n\n# Network Policies\n"
-  kubectl get networkpolicy -o wide --all-namespaces
+  $KUBECTL get networkpolicy -o wide --all-namespaces
 
   printf "\n\n# Pod Security Policies\n"
-  kubectl get psp -o wide
+  $KUBECTL get psp -o wide
 
   printf "\n\n# RBAC - clusterroles\n"
-  kubectl get clusterrole -o wide
+  $KUBECTL get clusterrole -o wide
   printf "\n\n# RBAC - clusterrolebindings\n"
-  kubectl get clusterrolebindings -o wide
+  $KUBECTL get clusterrolebindings -o wide
   printf "\n\n# RBAC - roles\n"
-  kubectl get role -o wide --all-namespaces
+  $KUBECTL get role -o wide --all-namespaces
   printf "\n\n# RBAC - rolebindings\n"
-  kubectl get rolebindings -o wide --all-namespaces
+  $KUBECTL get rolebindings -o wide --all-namespaces
   printf "\n\n# RBAC - serviceaccounts\n"
-  kubectl get serviceaccount -o wide --all-namespaces
+  $KUBECTL get serviceaccount -o wide --all-namespaces
 
   printf "\n\n# All\n"
-  kubectl get all --all-namespaces -o wide --show-labels
+  $KUBECTL get all --all-namespaces -o wide --show-labels
 }

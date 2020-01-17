@@ -128,8 +128,12 @@ ENV YAML2JSON_VERSION=1.3 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
     KUSTOMIZE_VERSION=3.2.1 \
     KUSTOMIZE_SHA256=a91b38778945e8a63fe70bc7522703a94c1d572d5dcee245e96647359e1fd04b \
-    KUBECTL_VERSION=1.14.10 \
-    KUBECTL_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
+    KUBECTL_DEFAULT_VERSION=1.13.11 \
+    KUBECTL_DEFAULT_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_1_13_VERSION=1.13.11 \
+    KUBECTL_1_13_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_1_14_VERSION=1.14.10 \
+    KUBECTL_1_14_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
     VAULT_VERSION=1.1.3 \
     VAULT_SHA256=293b88f4d31f6bcdcc8b508eccb7b856a0423270adebfa0f52f04144c5a22ae0 \
     VAULT_SIDEKICK_VERSION=0.3.10 \
@@ -174,11 +178,23 @@ RUN set -e \
     && chmod +x /usr/local/bin/kustomize \
     && cd /usr/local/bin \
     && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
-# kubectl
-    && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+# kubectl (default version)
+    && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_DEFAULT_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && cd /usr/local/bin \
-    && echo "$KUBECTL_SHA256  kubectl" | sha256sum -c \
+    && echo "$KUBECTL_DEFAULT_SHA256  kubectl" | sha256sum -c \
+    && cd /tmp \
+# kubectl 1.13
+    && wget -q -O /usr/local/bin/kubectl_v1.13 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_13_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.13 \
+    && cd /usr/local/bin \
+    && echo "$KUBECTL_1_13_SHA256  kubectl_v1.13" | sha256sum -c \
+    && cd /tmp \
+# kubectl 1.14
+    && wget -q -O /usr/local/bin/kubectl_v1.14 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_14_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.14 \
+    && cd /usr/local/bin \
+    && echo "$KUBECTL_1_14_SHA256  kubectl_v1.14" | sha256sum -c \
     && cd /tmp \
 # vault
     && wget -q -O /tmp/vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
