@@ -128,24 +128,28 @@ ENV YAML2JSON_VERSION=1.3 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
     KUSTOMIZE_VERSION=3.2.1 \
     KUSTOMIZE_SHA256=a91b38778945e8a63fe70bc7522703a94c1d572d5dcee245e96647359e1fd04b \
-    KUBECTL_VERSION=1.13.11 \
-    KUBECTL_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_DEFAULT_VERSION=1.13.11 \
+    KUBECTL_DEFAULT_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_1_13_VERSION=1.13.11 \
+    KUBECTL_1_13_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_1_14_VERSION=1.14.10 \
+    KUBECTL_1_14_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
     VAULT_VERSION=1.1.3 \
     VAULT_SHA256=293b88f4d31f6bcdcc8b508eccb7b856a0423270adebfa0f52f04144c5a22ae0 \
     VAULT_SIDEKICK_VERSION=0.3.10 \
     VAULT_SIDEKICK_SHA256=484c6ae5f47ba01989b176f3eb7ce565c3edcce31522187c74129d58cbf829b5 \
     DUMB_INIT_VERSION=1.2.2 \
     DUMB_INIT_SHA256=37f2c1f0372a45554f1b89924fbb134fc24c3756efaedf11e07f599494e0eff9 \
-    KIND_VERSION=0.5.1 \
-    KIND_SHA256=9a64f1774cdf24dad5f92e1299058b371c4e3f09d2f9eb281e91ed0777bd1e13 \
+    KIND_VERSION=0.7.0 \
+    KIND_SHA256=0e07d5a9d5b8bf410a1ad8a7c8c9c2ea2a4b19eda50f1c629f1afadb7c80fae7 \
     TERRAFORM_VERSION=0.12.5 \
     TERRAFORM_SHA256=babb4a30b399fb6fc87a6aa7435371721310c2e2102a95a763ef2c979ab06ce2 \
     TERRAGRUNT_VERSION=0.19.12 \
     TERRAGRUNT_SHA256=a605a8ee8133fdf952c43a3a3483a8e4a0f168c602291d6e5d63758f9dd83022 \
     TERRAFORM_CT_PROVIDER_VERSION=0.4.0 \
     TERRAFORM_CT_PROVIDER_SHA256=b9ddb666fd566f865ff93368f46101ab64f0f2a1c7f44e1a924153277ef3a005 \
-    KUBECFG_VERSION=0.13.0 \
-    KUBECFG_SHA256=1edb1068ad95b9c22c222d7fb5a033cded22dcfe2530964d5197ab8a6376a6e7 \
+    KUBECFG_VERSION=0.14.0 \
+    KUBECFG_SHA256=bb1455ec70f93d6f0fd344becec2f1617837a879e8363272d3216bf44c04cb2c \
     JQ_VERSION=1.5 \
     JQ_SHA256=c6b3a7d7d3e7b70c6f51b706a3b90bd01833846c54d32ca32f0027f00226ff6d \
     BASH_UNIT_VERSION=1.6.1 \
@@ -174,11 +178,23 @@ RUN set -e \
     && chmod +x /usr/local/bin/kustomize \
     && cd /usr/local/bin \
     && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
-# kubectl
-    && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+# kubectl (default version)
+    && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_DEFAULT_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && cd /usr/local/bin \
-    && echo "$KUBECTL_SHA256  kubectl" | sha256sum -c \
+    && echo "$KUBECTL_DEFAULT_SHA256  kubectl" | sha256sum -c \
+    && cd /tmp \
+# kubectl 1.13
+    && wget -q -O /usr/local/bin/kubectl_v1.13 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_13_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.13 \
+    && cd /usr/local/bin \
+    && echo "$KUBECTL_1_13_SHA256  kubectl_v1.13" | sha256sum -c \
+    && cd /tmp \
+# kubectl 1.14
+    && wget -q -O /usr/local/bin/kubectl_v1.14 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_14_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.14 \
+    && cd /usr/local/bin \
+    && echo "$KUBECTL_1_14_SHA256  kubectl_v1.14" | sha256sum -c \
     && cd /tmp \
 # vault
     && wget -q -O /tmp/vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
