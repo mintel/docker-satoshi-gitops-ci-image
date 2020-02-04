@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.10.1]
+
+### Added
+- Added `KIND_OPTS` env-var (passed into `kind create cluster`)
+
 ## [v0.10.0]
 
 ### Added
