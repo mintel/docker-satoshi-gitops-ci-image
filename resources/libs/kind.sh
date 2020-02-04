@@ -4,9 +4,10 @@ K8S_VERSION="${K8S_VERSION:-v1.13.12@sha256:5e8ae1a4e39f3d151d420ef912e18368745a
 K8S_WORKERS="${KIND_NODES:-1}"
 KIND_FIX_KUBECONFIG="${KIND_FIX_KUBECONFIG:-false}"
 KIND_REPLACE_CNI="${KIND_REPLACE_CNI:-false}"
+KIND_OPTS="${KIND_OPTS:-}"
 DOCKER_HOST_ALIAS="${DOCKER_HOST_ALIAS:-docker}"
 
-KUBECTL=$(echo $K8S_VERSION | sed -r "s/(v.*\..*)\..*/kubectl_\1/")
+KUBECTL=$(echo "${K8S_VERSION}" | sed -r "s/(v.*\..*)\..*/kubectl_\1/")
 
 function install_cni() {
   $KUBECTL apply -f "https://cloud.weave.works/k8s/net?k8s-version=$($KUBECTL version | base64 | tr -d '\n')"
@@ -45,7 +46,7 @@ EOF
 
   export KUBECONFIG="${HOME}/.kube/kind-config"
 
-  kind create cluster --config /tmp/kind-config.yaml
+  kind "${KIND_OPTS}" create cluster --config /tmp/kind-config.yaml
 
   if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then  
     sed -i -e "s/server: https:\/\/0\.0\.0\.0/server: https:\/\/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
