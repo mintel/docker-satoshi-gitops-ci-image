@@ -128,10 +128,10 @@ ENV YAML2JSON_VERSION=1.3 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
     KUSTOMIZE_VERSION=3.2.1 \
     KUSTOMIZE_SHA256=a91b38778945e8a63fe70bc7522703a94c1d572d5dcee245e96647359e1fd04b \
-    KUBECTL_DEFAULT_VERSION=1.13.11 \
-    KUBECTL_DEFAULT_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
-    KUBECTL_1_13_VERSION=1.13.11 \
-    KUBECTL_1_13_SHA256=825b7e68bb316bf6b1c776d16336a3a2049afae8c664b233de06d6505c8d1ca5 \
+    KUBECTL_DEFAULT_VERSION=1.14.10 \
+    KUBECTL_DEFAULT_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
+    KUBECTL_1_15_VERSION=1.15.10 \
+    KUBECTL_1_15_SHA256=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b \
     KUBECTL_1_14_VERSION=1.14.10 \
     KUBECTL_1_14_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
     VAULT_VERSION=1.1.3 \
@@ -184,11 +184,11 @@ RUN set -e \
     && cd /usr/local/bin \
     && echo "$KUBECTL_DEFAULT_SHA256  kubectl" | sha256sum -c \
     && cd /tmp \
-# kubectl 1.13
-    && wget -q -O /usr/local/bin/kubectl_v1.13 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_13_VERSION}/bin/linux/amd64/kubectl \
-    && chmod +x /usr/local/bin/kubectl_v1.13 \
+# kubectl 1.15
+    && wget -q -O /usr/local/bin/kubectl_v1.15 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_15_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.15 \
     && cd /usr/local/bin \
-    && echo "$KUBECTL_1_13_SHA256  kubectl_v1.13" | sha256sum -c \
+    && echo "$KUBECTL_1_15_SHA256  kubectl_v1.15" | sha256sum -c \
     && cd /tmp \
 # kubectl 1.14
     && wget -q -O /usr/local/bin/kubectl_v1.14 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_14_VERSION}/bin/linux/amd64/kubectl \
