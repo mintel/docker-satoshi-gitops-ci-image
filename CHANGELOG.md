@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## v0.12.0 (2020-03-10)
 ### Changed
 - Bump `terraform` to `v0.12.23`
-- Bump `terragrunt` to `v0.23.0`
+- Bump `terragrunt` to `v0.23.2`
 
 ## [v0.11.0]
 
