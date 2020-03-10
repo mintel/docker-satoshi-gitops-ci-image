@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.12.0 (2020-03-10)
+### Changed
+- Bump `terraform` to `v0.12.23`
+- Bump `terragrunt` to `v0.23.0`
+
+## [v0.11.0]
+
+### Changed
+- Update kubectl default and alt versions
+
 ## [v0.10.1]
 
 ### Added
