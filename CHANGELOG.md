@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.13.0 (2020-03-12)
+### Changed
+- Bump `kustomize` to `v3.5.3`
+
 ## v0.12.0 (2020-03-10)
 ### Changed
 - Bump `terraform` to `v0.12.23`
