@@ -126,8 +126,8 @@ ENV YAML2JSON_VERSION=1.3 \
     YAML2JSON_SHA256=e792647dd757c974351ea4ad35030852af97ef9bbbfb9594f0c94317e6738e55 \
     YQ_VERSION=2.3.0 \
     YQ_SHA256=97b2c61ae843a429ce7e5a2c470cfeea1c9e9bf317793b41983ef228216fe31b \
-    KUSTOMIZE_VERSION=3.5.4 \
-    KUSTOMIZE_SHA256=c194d6c51b30cccfc2e38eef3dcc8e9135ae44fcaea70213b0a70b14bda7a243 \
+    KUSTOMIZE_VERSION=3.5.3 \
+    KUSTOMIZE_SHA256=e0b86d6fc5f46b83b9ee339e98bf265354b66d1ea9bf168a2077d6b5914afd78 \
     KUBECTL_DEFAULT_VERSION=1.14.10 \
     KUBECTL_DEFAULT_SHA256=7729c6612bec76badc7926a79b26e0d9b06cc312af46dbb80ea7416d1fce0b36 \
     KUBECTL_1_15_VERSION=1.15.10 \
@@ -175,11 +175,12 @@ RUN set -e \
     && echo "$YQ_SHA256  yq" | sha256sum -c \
 # kustomize
     && wget -q -O /tmp/kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz \
+    && cd /tmp \
+    && echo "$KUSTOMIZE_SHA256  kustomize.tar.gz" | sha256sum -c \
     && tar zxvf /tmp/kustomize.tar.gz -C /tmp \
     && mv /tmp/kustomize /usr/local/bin/kustomize \
     && chmod +x /usr/local/bin/kustomize \
-    && cd /usr/local/bin \
-    && echo "$KUSTOMIZE_SHA256  kustomize" | sha256sum -c \
+    && rm -f /tmp/kustomize.tar.gz \
 # kubectl (default version)
     && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_DEFAULT_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
