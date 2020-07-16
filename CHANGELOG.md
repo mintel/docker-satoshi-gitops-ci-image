@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.13.1 (2020-07-16)
+### Changed
+- Bump `opa` to `0.21.1`
+- Bump `conftest` to `0.19.0`
+
 ## v0.13.0 (2020-03-12)
 ### Changed
 - Bump `kustomize` to `v3.5.3`
