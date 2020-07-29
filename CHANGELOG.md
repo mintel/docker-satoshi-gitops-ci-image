@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.14.0 (2020-07-24)
+### Added
+- Added GitHub actions for linting Dockerfile and bash scripts
+- Added `fluxctl`
+- Added `stern`
+
+### Changed
+- Bump `jsonnet` to `v0.15.0`
+- Bump `kubectl_v1.15` to `v1.15.12`
+- Bump `terraform` to `v0.12.29` in preparation for 0.13 release
+- Bump `terragrunt` to `0.23.31`
+- Change default `kubectl` to `v1.15.12`
+- Cleanup Dockerfile and bash scripts with linter recommendations
+- Reduce docker image size and number of layers
+
 ## v0.13.1 (2020-07-16)
 ### Changed
 - Bump `opa` to `0.21.1`

@@ -1,0 +1,23 @@
+name: main
+
+on: 
+  - push
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+
+    container: hadolint/hadolint
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Shellcheck and shfmt
+        uses: luizm/action-sh-checker@v0.1.7
+
+      - name: Hadolint
+        run: hadolint Dockerfile --ignore DL3008 --ignore DL3013 --ignore DL3022
+        # Ignore the following linting complaints:
+        #   - DL3008: Pin versions in apt-get install
+        #   - DL3013: Pin versions in pip
+        #   - DL3022: COPY --from should reference a previously defined FROM alias
