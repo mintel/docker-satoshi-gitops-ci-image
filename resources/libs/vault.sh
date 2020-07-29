@@ -29,7 +29,7 @@ function extract_vault_configs_from_manifests() {
     file=$CONFS_DIR/$env/kustomize/manifests.yaml
     N_DOCS=$(grep -E ^kind "$file" -c)
 
-    ((_DOCS -= 1))
+    ((N_DOCS -= 1))
 
     for DOC in $(seq 0 "$N_DOCS"); do
       kind=$(yq read -d "$DOC" "$file" kind)
