@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 [[ "$TRACE" ]] && set -x
 
 K8S_VERSION="${K8S_VERSION:-v1.13.12@sha256:5e8ae1a4e39f3d151d420ef912e18368745a2ede6d20ea87506920cd947a7e3a}"
@@ -14,7 +16,7 @@ function install_cni() {
 }
 
 function start_kind() {
-  cat > /tmp/kind-config.yaml <<EOF
+  cat >/tmp/kind-config.yaml <<EOF
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -23,22 +25,21 @@ nodes:
 EOF
 
   if [[ $K8S_WORKERS -gt 0 ]]; then
-    for i in $(seq 1 "${K8S_WORKERS}");
-    do
-      cat >> /tmp/kind-config.yaml <<EOF
+    for _ in $(seq 1 "${K8S_WORKERS}"); do
+      cat >>/tmp/kind-config.yaml <<EOF
 - role: worker
   image: kindest/node:${K8S_VERSION}
 EOF
     done
   fi
-  
-  cat >> /tmp/kind-config.yaml <<EOF
+
+  cat >>/tmp/kind-config.yaml <<EOF
 networking:
   apiServerAddress: 0.0.0.0
 EOF
 
   if [[ "$KIND_REPLACE_CNI" == "true" ]]; then
-    cat >> /tmp/kind-config.yaml <<EOF
+    cat >>/tmp/kind-config.yaml <<EOF
   # Disable default CNI and install Weave Net to get around DIND issues
   disableDefaultCNI: true
 EOF
@@ -48,7 +49,7 @@ EOF
 
   kind "${KIND_OPTS}" create cluster --config /tmp/kind-config.yaml
 
-  if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then  
+  if [[ "$KIND_FIX_KUBECONFIG" == "true" ]]; then
     sed -i -e "s/server: https:\/\/0\.0\.0\.0/server: https:\/\/$DOCKER_HOST_ALIAS/" "$KUBECONFIG"
   fi
 
