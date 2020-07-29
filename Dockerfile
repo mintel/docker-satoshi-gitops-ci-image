@@ -119,7 +119,7 @@ RUN apt-get -y update && \
     wget -q -O- https://download.docker.com/linux/debian/gpg | apt-key add - && \
     wget -q -O- https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" >> /etc/apt/sources.list && \
-    echo "deb https://packages.cloud.google.com/apt cloud-sdk-stretch -c -s) main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    echo "deb https://packages.cloud.google.com/apt cloud-sdk-stretch main" >> /etc/apt/sources.list.d/google-cloud-sdk.list && \
     apt-get -y update && \
     apt-get -y install --no-install-recommends docker-ce-cli google-cloud-sdk && \
     apt-get -y purge aptitude g++ libssl-dev gcc libc-dev && \
