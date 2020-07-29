@@ -114,7 +114,8 @@ RUN apt-get -y update && \
       wget \
       unzip \
       pwgen \
-      ssss && \
+      ssss \
+      vim-tiny && \
     wget -q -O- https://download.docker.com/linux/debian/gpg | apt-key add - && \
     wget -q -O- https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" >> /etc/apt/sources.list && \
@@ -298,7 +299,9 @@ RUN set -e \
 # Configure support for terraform-ct-provider
     && printf 'providers {\n  ct = "/usr/local/bin/terraform-provider-ct"\n}\n' >> /home/mintel/.terraformrc \
 # Extend PATH for mintel user
-    && echo "PATH=\$HOME/.local/bin:\$PATH" >> /home/mintel/.bashrc
+    && echo "PATH=\$HOME/.local/bin:\$PATH" >> /home/mintel/.bashrc \
+# Add vim-tiny alias
+    && echo "alias vim=vim.tiny" >> /home/mintel/.bashrc
 
 ENV PATH=/home/mintel/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_HOST_ALIAS=docker \
