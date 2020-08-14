@@ -29,7 +29,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GITCRYPT_VERSION=0.6.0 \
     GITCRYPT_SHA256=777c0c7aadbbc758b69aff1339ca61697011ef7b92f1d1ee9518a8ee7702bb78 \
     JSONNET_VERSION=0.15.0 \
-    JSONNET_SHA256=f9575ae2dcd769bfe2475b86695387fc57d4b4fd60b0af2dee57f37091754370
+    JSONNET_SHA256=f9575ae2dcd769bfe2475b86695387fc57d4b4fd60b0af2dee57f37091754370 \
+    ALERTMANAGER_VERSION=0.21.0 \
+    ALERTMANAGER_SHA256=9ccd863937436fd6bfe650e22521a7f2e6a727540988eef515dde208f9aef232
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get -y update && \
@@ -53,7 +55,13 @@ RUN apt-get -y update && \
       tar zxvf /tmp/git-crypt.tar.gz -C /tmp && \
       make -C /tmp/git-crypt-$GITCRYPT_VERSION && make -C /tmp/git-crypt-$GITCRYPT_VERSION install PREFIX=/usr/local && \
       rm -rf /tmp/git-crypt.tar.gz /tmp/git-crypt-$GITCRYPT_VERSION && \
-      apt-get -y autoremove && apt-get -y clean && rm -rf /var/lib/apt/lists/*
+      apt-get -y autoremove && apt-get -y clean && rm -rf /var/lib/apt/lists/* && \
+      wget -q -O  /tmp/alertmanager.tar.gz https://github.com/prometheus/alertmanager/releases/download/v${ALERTMANAGER_VERSION}/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64.tar.gz && \
+      echo "$ALERTMANAGER_SHA256 /tmp/alertmanager.tar.gz" | sha256sum -c && \
+      tar zxvf /tmp/alertmanager.tar.gz -C /tmp && \
+      mv /tmp/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64/amtool /usr/local/bin && chmod a+x /usr/local/bin/amtool && \
+      rm -rf /tmp/alertmanager.tar.gz && \
+      rm -rf /tmp/alertmanager-${ALERTMANAGER_VERSION}.linux-amd64
 
 ##
 # Main Image
