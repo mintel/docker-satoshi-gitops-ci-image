@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.15.0 (2020-08-14)
+### Added
+- Added `amtool`
+
 ## v0.14.0 (2020-07-24)
 ### Added
 - Added GitHub actions for linting Dockerfile and bash scripts
