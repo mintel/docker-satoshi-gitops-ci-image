@@ -189,14 +189,14 @@ RUN set -e \
     && wget -q -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_DEFAULT_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && echo "$KUBECTL_DEFAULT_SHA256 /usr/local/bin/kubectl" | sha256sum -c \
+# kubectl 1.16
+    && wget -q -O /usr/local/bin/kubectl_v1.16 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_16_VERSION}/bin/linux/amd64/kubectl \
+    && chmod +x /usr/local/bin/kubectl_v1.16 \
+    && echo "$KUBECTL_1_16_SHA256 /usr/local/bin/kubectl_v1.16" | sha256sum -c \
 # kubectl 1.15
     && wget -q -O /usr/local/bin/kubectl_v1.15 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_15_VERSION}/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl_v1.15 \
     && echo "$KUBECTL_1_15_SHA256 /usr/local/bin/kubectl_v1.15" | sha256sum -c \
-# kubectl 1.14
-    && wget -q -O /usr/local/bin/kubectl_v1.14 https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_1_14_VERSION}/bin/linux/amd64/kubectl \
-    && chmod +x /usr/local/bin/kubectl_v1.14 \
-    && echo "$KUBECTL_1_14_SHA256 /usr/local/bin/kubectl_v1.14" | sha256sum -c \
 # vault
     && wget -q -O /tmp/vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
     && echo "$VAULT_SHA256 /tmp/vault.zip" | sha256sum -c \
