@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## v0.15.0 (2020-09-21)
 - Added `kubectl_v1.16.13`
-- Bump `kubectl_v1.15.12` to `v1.16.13`
+- Change default `kubectl` to `v1.16.13`
 - Remove `kubectl_v1.14`
 
 ## v0.14.0 (2020-07-24)
