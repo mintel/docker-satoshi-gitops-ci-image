@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## v0.15.0 (2020-09-21)
+## v0.15.1 (2020-09-21)
 - Added `kubectl_v1.16.13`
 - Change default `kubectl` to `v1.16.13`
 - Remove `kubectl_v1.14`
