@@ -96,6 +96,7 @@ RUN apt-get -y update && \
       curl \
       dnsutils \
       ca-certificates \
+      file \
       gawk \
       gettext-base \
       git \

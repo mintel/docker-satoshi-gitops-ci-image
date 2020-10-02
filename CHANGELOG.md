@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## v0.16.0 (2020-10-02)
+### Added
+- Added `file`
+
 ### Change
 - Bump `kubeseal` to `v0.12.6`
 
