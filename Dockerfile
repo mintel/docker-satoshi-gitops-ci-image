@@ -96,6 +96,7 @@ RUN apt-get -y update && \
       curl \
       dnsutils \
       ca-certificates \
+      file \
       gawk \
       gettext-base \
       git \
@@ -160,8 +161,8 @@ ENV YAML2JSON_VERSION=1.3 \
     BASH_UNIT_SHA256=596c2bcbcebcc5611e3f2e1458b0f4be1adad8f91498b20e97c9f7634416950f \
     TEST_SSL_VERSION=3.0rc5 \
     TEST_SSL_SHA256=6118f08b88c0075f39820296f0d76889165dd67e64dbfdfd1104d6d122a938c9 \
-    KUBESEAL_VERSION=0.5.1 \
-    KUBESEAL_SHA256=c8a9dd32197c6ce3420a0d2c78dd7b3963bae03f53c9c1d032d0279fabfe2cb9 \
+    KUBESEAL_VERSION=0.12.6 \
+    KUBESEAL_SHA256=9572b161c6e98faf28a71f8137b3d78c401b531fdc7a0658a519b77caae7ed69 \
     CONFTEST_VERSION=0.19.0 \
     CONFTEST_SHA256=fe1112979b081cfd7a2f5bdbf1d5e2521a649ff77efb4c2a528e70de37a8f9c8 \
     STERN_VERSION=1.11.0 \
