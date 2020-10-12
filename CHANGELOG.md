@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.17.0 (2020-10-12)
+### Change
+- Bump `kubectl` to `v1.16.14`
+
 ## v0.16.0 (2020-10-02)
 ### Added
 - Added `file`
