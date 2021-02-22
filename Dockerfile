@@ -4,10 +4,6 @@
 
 FROM golang:1.12-stretch AS go-builder
 
-# Until terraform0.12 need tfjson2
-RUN go get github.com/justinm/tfjson2
-RUN go get github.com/kvz/json2hcl
-
 # No recent release.
 # https://github.com/jsonnet-bundler/jsonnet-bundler/issues/45
 RUN go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
