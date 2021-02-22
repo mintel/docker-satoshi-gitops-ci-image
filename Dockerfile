@@ -165,7 +165,9 @@ ENV YAML2JSON_VERSION=1.3 \
     STERN_VERSION=1.11.0 \
     STERN_SHA256=e0b39dc26f3a0c7596b2408e4fb8da533352b76aaffdc18c7ad28c833c9eb7db \
     FLUXCTL_VERSION=1.20.0 \
-    FLUXCTL_SHA256=790450b7fb3cbb5decc060223e489bce3459753b5e77e7bac1adeee8db41eb21
+    FLUXCTL_SHA256=790450b7fb3cbb5decc060223e489bce3459753b5e77e7bac1adeee8db41eb21 \
+    JSON2HCL_VERSION=0.0.6 \
+    JSON2HCL_SHA256=d124ed13f3538c465fcab19e6015d311d3cd56f7dc2db7609b6e72fec666482d
 
 
 #yaml2json
@@ -263,6 +265,10 @@ RUN set -e \
     && wget -q -O /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/${FLUXCTL_VERSION}/fluxctl_linux_amd64 \
     && echo "$FLUXCTL_SHA256 /usr/local/bin/fluxctl" | sha256sum -c \
     && chmod +x /usr/local/bin/fluxctl \
+# json2hcl
+    && wget -q -O /usr/local/bin/json2hcl https://github.com/kvz/json2hcl/releases/download/v${JSON2HCL_VERSION}/json2hcl_v${JSON2HCL_VERSION}_linux_amd64 \
+    && echo "$JSON2HCL_SHA256 /usr/local/bin/json2hcl" | sha256sum -c \
+    && chmod +x /usr/local/bin/json2hcl \
 # testssl.sh (make sure this is last, or at least don't rm -rf /tmp/* after this point)
     && wget -q -O /tmp/testssl.tar.gz https://github.com/drwetter/testssl.sh/archive/${TEST_SSL_VERSION}.tar.gz \
     && echo "$TEST_SSL_SHA256 /tmp/testssl.tar.gz" | sha256sum -c \
