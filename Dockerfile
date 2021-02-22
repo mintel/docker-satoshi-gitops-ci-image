@@ -274,10 +274,12 @@ RUN set -e \
     && rm -f /tmp/testssl.tar.gz
 
 
-# Install LETSENCRYPT staging fake root ca
+# Install LETSENCRYPT staging CA + intermediate certificates (keeping old 'fake' ones for backwards compatibility)
 RUN set -e \
     && wget -O /usr/local/share/ca-certificates/fakelerootx1.crt https://letsencrypt.org/certs/fakelerootx1.pem \
     && wget -O /usr/local/share/ca-certificates/fakeleintermediatex1.crt https://letsencrypt.org/certs/fakeleintermediatex1.pem \
+    && wget -O /usr/local/share/ca-certificates/letsencrypt-stg-root-x1.crt https://letsencrypt.org/certs/staging/letsencrypt-stg-root-x1.pem \
+    && wget -O /usr/local/share/ca-certificates/letsencrypt-stg-int-r3.crt https://letsencrypt.org/certs/staging/letsencrypt-stg-int-r3.pem \
     && update-ca-certificates
 
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
