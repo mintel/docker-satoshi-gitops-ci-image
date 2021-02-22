@@ -283,7 +283,7 @@ COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
 COPY --from=openpolicyagent/opa:0.21.1 /opa /usr/local/bin/opa
 COPY --from=prom/prometheus:v2.13.0 /bin/promtool /usr/local/bin/promtool
 
-COPY --from=go-builder /go/bin/tfjson2 /go/bin/tfjson2 /go/bin/gojsontoyaml /go/bin/json2hcl /go/bin/jb /usr/local/bin/
+COPY --from=go-builder /go/bin/gojsontoyaml /go/bin/jb /usr/local/bin/
 COPY --from=deb-builder /usr/local/bin/jsonnet* /usr/local/bin/git-crypt /usr/local/bin/
 
 RUN useradd -ms /bin/bash mintel
