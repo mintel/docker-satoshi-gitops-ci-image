@@ -298,7 +298,7 @@ USER mintel
 WORKDIR /home/mintel
 
 RUN set -e \
-    && pip3 install yamllint docker-compose \
+    && pip3 install --no-cache-dir yamllint docker-compose \
 # Configure support for terraform-ct-provider
     && printf 'providers {\n  ct = "/usr/local/bin/terraform-provider-ct"\n}\n' >> /home/mintel/.terraformrc \
 # Extend PATH for mintel user
