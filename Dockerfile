@@ -102,10 +102,11 @@ RUN apt-get -y update && \
       openssh-client \
       pass \
       procps \
-      python3-virtualenv \
+      python3-cryptography \
       python3-pip \
       python3-pkg-resources \
       python3-setuptools \
+      python3-virtualenv \
       python3-wheel \
       software-properties-common \
       wget \
