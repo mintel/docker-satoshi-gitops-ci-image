@@ -4,10 +4,6 @@
 
 FROM golang:1.12-stretch AS go-builder
 
-# Until terraform0.12 need tfjson2
-RUN go get github.com/justinm/tfjson2
-RUN go get github.com/kvz/json2hcl
-
 # No recent release.
 # https://github.com/jsonnet-bundler/jsonnet-bundler/issues/45
 RUN go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
@@ -106,10 +102,11 @@ RUN apt-get -y update && \
       openssh-client \
       pass \
       procps \
-      python3-virtualenv \
+      python3-cryptography \
       python3-pip \
       python3-pkg-resources \
       python3-setuptools \
+      python3-virtualenv \
       python3-wheel \
       software-properties-common \
       wget \
@@ -168,7 +165,9 @@ ENV YAML2JSON_VERSION=1.3 \
     STERN_VERSION=1.11.0 \
     STERN_SHA256=e0b39dc26f3a0c7596b2408e4fb8da533352b76aaffdc18c7ad28c833c9eb7db \
     FLUXCTL_VERSION=1.20.0 \
-    FLUXCTL_SHA256=790450b7fb3cbb5decc060223e489bce3459753b5e77e7bac1adeee8db41eb21
+    FLUXCTL_SHA256=790450b7fb3cbb5decc060223e489bce3459753b5e77e7bac1adeee8db41eb21 \
+    JSON2HCL_VERSION=0.0.6 \
+    JSON2HCL_SHA256=d124ed13f3538c465fcab19e6015d311d3cd56f7dc2db7609b6e72fec666482d
 
 
 #yaml2json
@@ -266,6 +265,10 @@ RUN set -e \
     && wget -q -O /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/${FLUXCTL_VERSION}/fluxctl_linux_amd64 \
     && echo "$FLUXCTL_SHA256 /usr/local/bin/fluxctl" | sha256sum -c \
     && chmod +x /usr/local/bin/fluxctl \
+# json2hcl
+    && wget -q -O /usr/local/bin/json2hcl https://github.com/kvz/json2hcl/releases/download/v${JSON2HCL_VERSION}/json2hcl_v${JSON2HCL_VERSION}_linux_amd64 \
+    && echo "$JSON2HCL_SHA256 /usr/local/bin/json2hcl" | sha256sum -c \
+    && chmod +x /usr/local/bin/json2hcl \
 # testssl.sh (make sure this is last, or at least don't rm -rf /tmp/* after this point)
     && wget -q -O /tmp/testssl.tar.gz https://github.com/drwetter/testssl.sh/archive/${TEST_SSL_VERSION}.tar.gz \
     && echo "$TEST_SSL_SHA256 /tmp/testssl.tar.gz" | sha256sum -c \
@@ -274,10 +277,12 @@ RUN set -e \
     && rm -f /tmp/testssl.tar.gz
 
 
-# Install LETSENCRYPT staging fake root ca
+# Install LETSENCRYPT staging CA + intermediate certificates (keeping old 'fake' ones for backwards compatibility)
 RUN set -e \
     && wget -O /usr/local/share/ca-certificates/fakelerootx1.crt https://letsencrypt.org/certs/fakelerootx1.pem \
     && wget -O /usr/local/share/ca-certificates/fakeleintermediatex1.crt https://letsencrypt.org/certs/fakeleintermediatex1.pem \
+    && wget -O /usr/local/share/ca-certificates/letsencrypt-stg-root-x1.crt https://letsencrypt.org/certs/staging/letsencrypt-stg-root-x1.pem \
+    && wget -O /usr/local/share/ca-certificates/letsencrypt-stg-int-r3.crt https://letsencrypt.org/certs/staging/letsencrypt-stg-int-r3.pem \
     && update-ca-certificates
 
 COPY --from=mintel/k8s-yaml-splitter:0.1.0 /k8s-yaml-splitter /usr/local/bin/k8s-yaml-splitter
@@ -285,7 +290,7 @@ COPY --from=gcr.io/google_containers/pause-amd64:3.1 /pause /
 COPY --from=openpolicyagent/opa:0.21.1 /opa /usr/local/bin/opa
 COPY --from=prom/prometheus:v2.13.0 /bin/promtool /usr/local/bin/promtool
 
-COPY --from=go-builder /go/bin/tfjson2 /go/bin/tfjson2 /go/bin/gojsontoyaml /go/bin/json2hcl /go/bin/jb /usr/local/bin/
+COPY --from=go-builder /go/bin/gojsontoyaml /go/bin/jb /usr/local/bin/
 COPY --from=deb-builder /usr/local/bin/jsonnet* /usr/local/bin/git-crypt /usr/local/bin/
 
 RUN useradd -ms /bin/bash mintel
@@ -296,7 +301,7 @@ USER mintel
 WORKDIR /home/mintel
 
 RUN set -e \
-    && pip3 install yamllint docker-compose \
+    && pip3 install --no-cache-dir yamllint docker-compose \
 # Configure support for terraform-ct-provider
     && printf 'providers {\n  ct = "/usr/local/bin/terraform-provider-ct"\n}\n' >> /home/mintel/.terraformrc \
 # Extend PATH for mintel user
