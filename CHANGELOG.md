@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.17.1 (2021-02-23)
+### Change
+- Include new Let's Encrypt staging certs
+- Fix Dockerfile build and lint errors
+- Fix broken GitHub action
+- Replace `json2hcl` import with binary install
+
 ## v0.17.0 (2020-10-12)
 ### Change
 - Bump `kubectl` to `v1.16.14`
